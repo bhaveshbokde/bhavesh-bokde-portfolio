@@ -26,6 +26,21 @@ export const profile: Profile = {
   // Uncomment to show the phone row in the contact section again.
   // phone: "+91 8830076645",
 
+  /**
+   * The technologies called out in the hero, in order.
+   *
+   * Keep this short — it is a first impression, not the skills section. Every
+   * entry should also exist in `src/data/skills.ts` so the two never disagree;
+   * a test enforces that.
+   */
+  heroTechnologies: [
+    "Java",
+    "Spring Boot",
+    "PostgreSQL",
+    "Redis",
+    "Apache Kafka",
+  ],
+
   careerStartDate: "2022-09-01",
   // yearsOfExperienceOverride: "3.5+",   // uncomment to pin the figure
 

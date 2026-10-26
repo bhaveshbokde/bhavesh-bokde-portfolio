@@ -61,6 +61,14 @@ export function ProjectCard({ project }: { project: Project }) {
         )}
       />
 
+      {/* A single hairline of light along the top edge on hover. One animated
+          border per card, not a glowing outline that traces the perimeter —
+          six of those on screen at once is a disco, not a portfolio. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px scale-x-0 bg-gradient-to-r from-transparent via-azure-400/70 to-transparent opacity-0 transition-all duration-500 ease-out group-hover:scale-x-100 group-hover:opacity-100"
+      />
+
       {/* ---------------- preview ---------------- */}
       <div className="relative aspect-[16/10] overflow-hidden border-b border-ink-700/70 bg-ink-950/60">
         {project.preview ? (

@@ -6,6 +6,7 @@ import type { NavItem } from "@/data/types";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/Icon";
 import { ButtonLink } from "@/components/ui/Button";
+import { CommandPalette, type Command } from "@/components/ui/CommandPalette";
 
 export interface HeaderProps {
   monogram: string;
@@ -13,6 +14,8 @@ export interface HeaderProps {
   navItems: NavItem[];
   resumePath: string;
   resumeDownloadName: string;
+  /** Commands for the ⌘K palette, derived in `getCommands()`. */
+  commands: Command[];
 }
 
 /**
@@ -40,6 +43,7 @@ export function Header({
   navItems,
   resumePath,
   resumeDownloadName,
+  commands,
 }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -193,6 +197,8 @@ export function Header({
 
           {/* --- actions --- */}
           <div className="flex items-center gap-2">
+            <CommandPalette commands={commands} />
+
             <ButtonLink
               href={resumePath}
               download={resumeDownloadName}

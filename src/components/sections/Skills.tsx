@@ -1,4 +1,4 @@
-import { getSkillGroups } from "@/lib/content";
+import { getSkillGroupsWithContext } from "@/lib/content";
 import { Section } from "@/components/ui/Section";
 import { SkillsExplorer } from "@/components/ui/SkillsExplorer";
 
@@ -15,7 +15,7 @@ import { SkillsExplorer } from "@/components/ui/SkillsExplorer";
  * interview.
  */
 export function Skills() {
-  const groups = getSkillGroups();
+  const groups = getSkillGroupsWithContext();
   if (groups.length === 0) return null;
 
   const total = groups.reduce((count, group) => count + group.skills.length, 0);

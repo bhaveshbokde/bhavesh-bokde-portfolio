@@ -97,9 +97,24 @@ describe("CaseStudySection", () => {
     expect(notice).toHaveTextContent(/no internal endpoint/i);
   });
 
-  it("labels the architecture diagram as generic and synthetic", () => {
+  it("labels the architecture diagram as generic, not internal", () => {
     render(<CaseStudySection />);
-    expect(screen.getByText(/generic · synthetic/)).toBeInTheDocument();
+    const label = screen.getByText(/generic · not internal/);
+    expect(label).toBeInTheDocument();
+    // The tooltip has to spell out what the badge means, not just hint at it.
+    expect(label).toHaveAttribute(
+      "title",
+      expect.stringMatching(/not a depiction of any employer's internal/i),
+    );
+  });
+
+  it("renders the architecture as an explorable diagram with a legend", () => {
+    render(<CaseStudySection />);
+    expect(
+      screen.getByRole("button", { name: /play request lifecycle/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Request path")).toBeInTheDocument();
+    expect(screen.getByText("Retry & failure path")).toBeInTheDocument();
   });
 
   it("links through to the full case study", () => {

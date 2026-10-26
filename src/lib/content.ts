@@ -155,6 +155,38 @@ export interface SkillGroup {
   skills: Skill[];
 }
 
+/**
+ * Strips version numbers so "Spring Boot 3.5" and "Spring Boot" compare equal.
+ * Project stacks carry versions because they are precise; skill names do not
+ * because they are a vocabulary.
+ */
+function normaliseTech(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/\s+v?\d+(\.\d+)*$/, "")
+    .trim();
+}
+
+/**
+ * Which projects actually list this technology in their stack.
+ *
+ * Derived from `projects.stack` rather than stored on the skill, so the two
+ * can never disagree. Add Kafka to a project's stack and that project appears
+ * under the Kafka skill automatically — and if you remove it, the link
+ * disappears rather than lingering as a stale claim.
+ */
+export function getProjectsUsingSkill(skillName: string): Project[] {
+  const target = normaliseTech(skillName);
+  return getProjects().filter((project) =>
+    project.stack.some((tech) => normaliseTech(tech) === target),
+  );
+}
+
+export interface SkillWithContext extends Skill {
+  /** Projects whose stack lists this technology. May be empty. */
+  projects: { slug: string; name: string }[];
+}
+
 export function getSkillCategories(): SkillCategory[] {
   return visibleSorted(skillCategories);
 }
@@ -177,6 +209,23 @@ export function getSkillGroups(): SkillGroup[] {
       skills: visibleSkills.filter((skill) => skill.category === category.id),
     }))
     .filter((group) => group.skills.length > 0);
+}
+
+/** Skill groups with each skill annotated with the projects that use it. */
+export function getSkillGroupsWithContext(): {
+  category: SkillCategory;
+  skills: SkillWithContext[];
+}[] {
+  return getSkillGroups().map((group) => ({
+    category: group.category,
+    skills: group.skills.map((skill) => ({
+      ...skill,
+      projects: getProjectsUsingSkill(skill.name).map((project) => ({
+        slug: project.slug,
+        name: project.name,
+      })),
+    })),
+  }));
 }
 
 /* ------------------------------------------------------------------ */
@@ -239,4 +288,91 @@ export function isSectionEnabled(id: SectionId): boolean {
 /** Section ids in the order configured, so the page order follows the config. */
 export function getEnabledSections(): SectionId[] {
   return siteConfig.sections;
+}
+
+/* ------------------------------------------------------------------ */
+/* Command palette                                                     */
+/* ------------------------------------------------------------------ */
+
+export interface PaletteCommand {
+  id: string;
+  label: string;
+  keywords?: string;
+  icon: string;
+  group: string;
+  href: string;
+  external?: boolean;
+  download?: string;
+  hint?: string;
+}
+
+const SECTION_ICONS: Record<string, string> = {
+  "#about": "Info",
+  "#experience": "Building2",
+  "#skills": "Layers",
+  "#projects": "Boxes",
+  "#contact": "Mail",
+};
+
+/**
+ * The command palette's contents, derived from the same data as the rest of
+ * the site.
+ *
+ * Nothing is hardcoded here: sections come from the nav config, projects from
+ * the project list, links from the social config. Add a project or a nav entry
+ * and it becomes reachable from ⌘K with no change to the palette.
+ */
+export function getCommands(): PaletteCommand[] {
+  const sections: PaletteCommand[] = getNavItems().map((item) => ({
+    id: `go${item.href.replace(/[^a-z0-9]/gi, "-")}`,
+    label: item.label,
+    icon: SECTION_ICONS[item.href] ?? "ArrowRight",
+    group: "Jump to",
+    href: item.href,
+  }));
+
+  const projectCommands: PaletteCommand[] = getProjects().map((project) => ({
+    id: `project-${project.slug}`,
+    label: project.name,
+    keywords: `${project.category} ${project.stack.join(" ")}`,
+    icon: project.kind === "professional" ? "Building2" : "Code2",
+    group: "Projects",
+    href: `/projects/${project.slug}`,
+    hint: project.kind === "professional" ? "case study" : undefined,
+  }));
+
+  const linkCommands: PaletteCommand[] = getSocialLinks()
+    .filter((link) => Boolean(link.url))
+    .map((link) => ({
+      id: `link-${link.id}`,
+      label: link.label,
+      keywords: link.handle ?? "",
+      icon: link.icon,
+      group: "Elsewhere",
+      href: link.url as string,
+      external: !link.url!.startsWith("mailto:"),
+    }));
+
+  const actions: PaletteCommand[] = [
+    {
+      id: "resume",
+      label: "Download resume",
+      keywords: "cv pdf",
+      icon: "Download",
+      group: "Actions",
+      href: siteConfig.resumePath,
+      download: siteConfig.resumeDownloadName,
+      hint: "PDF",
+    },
+    {
+      id: "home",
+      label: "Back to top",
+      keywords: "home start",
+      icon: "ArrowUpRight",
+      group: "Actions",
+      href: "#hero",
+    },
+  ];
+
+  return [...sections, ...projectCommands, ...actions, ...linkCommands];
 }

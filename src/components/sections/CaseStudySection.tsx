@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/Icon";
 import { ButtonLink } from "@/components/ui/Button";
 import { KindBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { ConfidentialityNotice } from "@/components/ui/ConfidentialityNotice";
+import { ArchitectureExplorer } from "@/components/visuals/ArchitectureExplorer";
 
 /**
  * The featured office project, given its own section on the home page.
@@ -125,6 +126,9 @@ export function CaseStudySection() {
 
           {/* ---------------- diagram ---------------- */}
           <Reveal delay={0.1}>
+            {project.interactiveArchitecture ? (
+              <ArchitectureExplorer />
+            ) : (
             <figure className="surface-card overflow-hidden">
               <figcaption className="flex items-center justify-between gap-3 border-b border-ink-700/70 px-5 py-3">
                 <span className="font-mono text-[11px] tracking-[0.16em] text-mist-500 uppercase">
@@ -167,6 +171,7 @@ export function CaseStudySection() {
                 </ul>
               </div>
             </figure>
+            )}
           </Reveal>
         </div>
       </div>

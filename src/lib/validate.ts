@@ -103,6 +103,18 @@ export function validateContent(
   if (profile.about.length === 0) {
     push("src/data/profile.ts", "`about` needs at least one paragraph.");
   }
+  // The hero must not advertise a technology the skills section has never
+  // heard of — that is exactly the kind of drift nobody notices for months.
+  const skillNames = new Set(skills.map((s) => s.name));
+  for (const technology of profile.heroTechnologies ?? []) {
+    if (!skillNames.has(technology)) {
+      push(
+        "src/data/profile.ts",
+        `heroTechnologies lists "${technology}", which is not a skill in ` +
+          `src/data/skills.ts. Add it there, or correct the spelling.`,
+      );
+    }
+  }
 
   /* ----- skill categories ---------------------------------------- */
   const categoryIds = skillCategories.map((c) => c.id);
