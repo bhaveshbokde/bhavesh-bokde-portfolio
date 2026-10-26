@@ -9,6 +9,7 @@ import {
 } from "@/data/architecture";
 import { cn } from "@/lib/utils";
 import { EDGE_STYLE, NODE_STYLE } from "./style";
+import { NODE_METRICS, layoutNode } from "./measure";
 
 export interface ArchitectureCanvasProps {
   selectedId: string;
@@ -113,6 +114,10 @@ export function ArchitectureCanvas({
                 strokeDasharray="8 6"
               />
               <text
+                /* Sits above the zone box on purpose — it titles the region
+                   rather than labelling anything inside it. Flagged so the
+                   overflow audit does not read it as text escaping a node. */
+                data-outside-box="true"
                 x={zone.x + 16}
                 y={zone.y - 10}
                 fill={zone.accent}
@@ -160,12 +165,20 @@ export function ArchitectureCanvas({
             );
           })}
 
-          {/* ---- components ---- */}
+          {/* ---- components ----
+              Each node's text is wrapped to its own width and the box is
+              grown to hold the result. Previously both strings were single
+              `<text>` elements at fixed offsets, which meant a long one —
+              "Financial Information Providers", "internal · downstream of the
+              protocol" — simply drew straight out through the right-hand
+              border. SVG gives you no wrapping and no clipping by default, so
+              nothing stopped it. */}
           {ARCH_NODES.map((node, index) => {
             const style = NODE_STYLE[node.kind];
             const isSelected = node.id === selectedId;
             const isActive = activeNodes.has(node.id);
             const dimmed = isStepping && !isActive;
+            const layout = layoutNode(node.label, node.caption, node.w, node.h);
 
             return (
               <g
@@ -186,7 +199,7 @@ export function ArchitectureCanvas({
                   x={node.x}
                   y={node.y}
                   width={node.w}
-                  height={node.h}
+                  height={layout.height}
                   rx="12"
                   fill={style.fill}
                   stroke={isSelected || isActive ? style.accent : style.stroke}
@@ -197,32 +210,64 @@ export function ArchitectureCanvas({
                     x={node.x}
                     y={node.y}
                     width={node.w}
-                    height={node.h}
+                    height={layout.height}
                     rx="12"
                     fill={style.accent}
                     opacity={isSelected ? 0.11 : 0.06}
                     pointerEvents="none"
                   />
                 )}
-                <circle cx={node.x + 17} cy={node.y + 24} r="3.5" fill={style.accent} />
+                <circle
+                  cx={node.x + NODE_METRICS.padX}
+                  cy={node.y + NODE_METRICS.labelBaseline - 4}
+                  r="3.5"
+                  fill={style.accent}
+                />
+
+                {/* The label. Line two onwards drops back to the caption's
+                    left inset, because there is no dot to clear. */}
                 <text
-                  x={node.x + 31}
-                  y={node.y + 28}
                   fill="#e2e7f2"
-                  fontSize="12"
+                  fontSize={NODE_METRICS.labelSize}
                   fontWeight="600"
                   fontFamily="system-ui, sans-serif"
                 >
-                  {node.label}
+                  {layout.labelLines.map((line, lineIndex) => (
+                    <tspan
+                      key={lineIndex}
+                      x={
+                        node.x +
+                        (lineIndex === 0 ? NODE_METRICS.labelX : NODE_METRICS.padX)
+                      }
+                      y={
+                        node.y +
+                        NODE_METRICS.labelBaseline +
+                        lineIndex * NODE_METRICS.labelLineHeight
+                      }
+                    >
+                      {line}
+                    </tspan>
+                  ))}
                 </text>
+
                 <text
-                  x={node.x + 17}
-                  y={node.y + 48}
                   fill="#68728a"
-                  fontSize="9.5"
+                  fontSize={NODE_METRICS.captionSize}
                   fontFamily="ui-monospace, monospace"
                 >
-                  {node.caption}
+                  {layout.captionLines.map((line, lineIndex) => (
+                    <tspan
+                      key={lineIndex}
+                      x={node.x + NODE_METRICS.padX}
+                      y={
+                        node.y +
+                        layout.captionTop +
+                        lineIndex * NODE_METRICS.captionLineHeight
+                      }
+                    >
+                      {line}
+                    </tspan>
+                  ))}
                 </text>
               </g>
             );

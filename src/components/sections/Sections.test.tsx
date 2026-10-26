@@ -77,9 +77,13 @@ describe("ExperienceSection", () => {
 
   it("labels the resume-reported figure so it is not read as a fresh measurement", () => {
     render(<ExperienceSection />);
-    const marker = screen.getByText("resume-reported");
+    const marker = screen.getByText("Reported in my résumé");
     expect(marker).toBeInTheDocument();
-    expect(marker).toHaveAttribute("title", expect.stringContaining("resume"));
+    // The explanation has to make both halves of the point: where the figure
+    // came from, and that nobody re-measured it for this website.
+    const title = marker.getAttribute("title") ?? "";
+    expect(title).toMatch(/r[eé]sum[eé]/i);
+    expect(title).toMatch(/not a measurement/i);
   });
 });
 

@@ -91,7 +91,19 @@ export function FailureExplorer({
                     </span>
                   </span>
 
-                  <SourceBadge source={failure.source} size="sm" className="hidden sm:inline-flex" />
+                  {/* Hidden by a wrapper, not by a class on the badge itself.
+                      `cn` concatenates without resolving Tailwind conflicts,
+                      so a `hidden` passed in as a prop sat alongside the
+                      badge's own `inline-flex` and lost on stylesheet order —
+                      the badge stayed visible at 375px, took 153px of a 307px
+                      row, and squeezed the failure title down to 43px, which
+                      is narrower than the word "rejected". The wrapper owns
+                      the display, so there is nothing to conflict with.
+                      Mobile still gets the provenance: the expanded panel
+                      below renders the same badge under `sm:hidden`. */}
+                  <span className="hidden shrink-0 sm:block">
+                    <SourceBadge source={failure.source} size="sm" />
+                  </span>
 
                   <Icon
                     name="ChevronDown"

@@ -205,16 +205,22 @@ export function Header({
           <div className="flex items-center gap-2">
             <CommandPalette commands={commands} />
 
-            <ButtonLink
-              href={resumePath}
-              download={resumeDownloadName}
-              variant="secondary"
-              size="sm"
-              className="hidden sm:inline-flex"
-            >
-              <Icon name="Download" size={15} />
-              Resume
-            </ButtonLink>
+            {/* Wrapper owns the breakpoint. Passing `hidden` to ButtonLink
+                did nothing: `cn` joins classes without resolving conflicts,
+                so it sat next to the button's own `inline-flex` and lost on
+                stylesheet order — the button showed at 375px, duplicating the
+                "Download resume" action already inside the mobile menu. */}
+            <span className="hidden sm:block">
+              <ButtonLink
+                href={resumePath}
+                download={resumeDownloadName}
+                variant="secondary"
+                size="sm"
+              >
+                <Icon name="Download" size={15} />
+                Resume
+              </ButtonLink>
+            </span>
 
             <button
               ref={toggleRef}

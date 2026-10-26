@@ -554,3 +554,154 @@ test.describe("project detail pages", () => {
     }
   });
 });
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Overflow regressions.
+
+   The unit tests in measure.test.ts check the *estimate*. These check what the
+   browser actually drew, which is the only thing that catches a font change, a
+   CSS regression, or an estimate that drifts out of calibration.
+   ──────────────────────────────────────────────────────────────────────── */
+
+test.describe("AAConnect architecture diagram", () => {
+  for (const width of [768, 1280, 1920]) {
+    test(`keeps every label inside its node at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto("/projects/aaconnect", { waitUntil: "networkidle" });
+
+      const spills = await page.evaluate(() => {
+        const svg = [...document.querySelectorAll("svg")].find(
+          (s) => s.getAttribute("viewBox") === "0 0 1240 748",
+        );
+        if (!svg) return ["diagram svg not found"];
+        const found: string[] = [];
+        for (const g of svg.querySelectorAll("g[role='button']")) {
+          const rect = g.querySelector("rect");
+          if (!rect) continue;
+          const r = rect.getBBox();
+          for (const text of g.querySelectorAll("text")) {
+            const t = text.getBBox();
+            // 12 user units of inner right margin, matching NODE_METRICS.
+            const spill = Math.max(
+              r.x - t.x,
+              t.x + t.width - (r.x + r.width - 10),
+              r.y - t.y,
+              t.y + t.height - (r.y + r.height),
+            );
+            if (spill > 0.5) {
+              found.push(
+                `"${text.textContent?.slice(0, 40)}" escapes its node by ${spill.toFixed(1)}u`,
+              );
+            }
+          }
+        }
+        return found;
+      });
+
+      expect(spills, spills.join("; ")).toEqual([]);
+    });
+  }
+
+  test("no two node boxes overlap once text has been wrapped", async ({ page }) => {
+    // Wrapping grows a node downwards. If it grows into its neighbour the
+    // diagram is wrong in a way that still "fits".
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await page.goto("/projects/aaconnect", { waitUntil: "networkidle" });
+
+    const overlaps = await page.evaluate(() => {
+      const svg = [...document.querySelectorAll("svg")].find(
+        (s) => s.getAttribute("viewBox") === "0 0 1240 748",
+      );
+      const boxes = [...svg!.querySelectorAll("g[role='button']")].map((g) => ({
+        label: g.querySelector("text")?.textContent ?? "?",
+        b: g.querySelector("rect")!.getBBox(),
+      }));
+      const hits: string[] = [];
+      for (let i = 0; i < boxes.length; i++) {
+        for (let j = i + 1; j < boxes.length; j++) {
+          const a = boxes[i]!.b, c = boxes[j]!.b;
+          const ox = Math.min(a.x + a.width, c.x + c.width) - Math.max(a.x, c.x);
+          const oy = Math.min(a.y + a.height, c.y + c.height) - Math.max(a.y, c.y);
+          if (ox > 0.5 && oy > 0.5)
+            hits.push(`${boxes[i]!.label} overlaps ${boxes[j]!.label}`);
+        }
+      }
+      return hits;
+    });
+
+    expect(overlaps, overlaps.join("; ")).toEqual([]);
+  });
+});
+
+test.describe("no text escapes its container", () => {
+  for (const route of ["/", "/projects/aaconnect", "/projects/sql-interview-mastery"]) {
+    test(`${route} fits at 320px, the narrowest supported width`, async ({ page }) => {
+      await page.setViewportSize({ width: 320, height: 720 });
+      await page.goto(route, { waitUntil: "networkidle" });
+
+      // Drive the explorer so the failure rows actually render.
+      const failures = page.getByRole("tab", { name: "Failure paths" });
+      if (await failures.count()) {
+        await failures.click();
+        await page.waitForTimeout(300);
+      }
+
+      const spills = await page.evaluate(() => {
+        const found: string[] = [];
+        for (const el of document.querySelectorAll<HTMLElement>("body *")) {
+          if (el.closest("svg")) continue;
+          const cs = getComputedStyle(el);
+          if (cs.display === "none" || cs.visibility === "hidden") continue;
+          const r = el.getBoundingClientRect();
+          // Visually-hidden content is clipped on purpose.
+          if (r.width <= 1.5 && r.height <= 1.5) continue;
+          if (cs.clipPath !== "none" || cs.clip !== "auto") continue;
+          if (r.right < 0) continue;
+          if (cs.overflowX === "auto" || cs.overflowX === "scroll") continue;
+          const hasText = [...el.childNodes].some(
+            (n) => n.nodeType === 3 && n.textContent!.trim(),
+          );
+          if (!hasText) continue;
+          const over = el.scrollWidth - el.clientWidth;
+          if (over > 1)
+            found.push(
+              `${el.tagName} "${el.textContent?.trim().slice(0, 40)}" overflows by ${over}px`,
+            );
+        }
+        return found;
+      });
+
+      expect(spills, spills.join(" | ")).toEqual([]);
+    });
+  }
+});
+
+test.describe("responsive visibility actually applies", () => {
+  // Both of these shipped broken: `cn` joins classes without resolving
+  // conflicts, so a `hidden` passed as a prop lost to the component's own
+  // display utility on stylesheet order.
+  test("the header resume button is hidden on a phone", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    const button = page
+      .locator("header a[download]")
+      .filter({ hasText: /resume/i });
+    await expect(button).toBeHidden();
+  });
+
+  test("the provenance badge leaves the failure row on a phone", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto("/projects/aaconnect", { waitUntil: "networkidle" });
+    await page.getByRole("tab", { name: "Failure paths" }).click();
+
+    // Scoped to the failure list: at 375px the first aria-expanded button on
+    // the page is the mobile menu toggle, not a failure row.
+    const row = page.locator("li button[aria-expanded][aria-controls]").first();
+    const title = row.locator("span.flex-1");
+    const box = await title.boundingBox();
+    const rowBox = await row.boundingBox();
+    // The title must get most of the row, not 43px of it.
+    expect(box!.width).toBeGreaterThan(rowBox!.width * 0.55);
+  });
+});
