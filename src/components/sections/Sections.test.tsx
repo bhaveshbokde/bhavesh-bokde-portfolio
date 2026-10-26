@@ -144,9 +144,22 @@ describe("Projects", () => {
     expect(screen.queryByRole("heading", { name: "AAConnect" })).not.toBeInTheDocument();
   });
 
-  it("marks the unfinished project as in development", () => {
+  it("no longer lists the retired DSA project", () => {
+    const { container } = render(<Projects />);
+    const text = (container.textContent ?? "").toLowerCase();
+    expect(text).not.toContain("leetcode");
+    expect(text).not.toContain("java dsa");
+  });
+
+  it("describes SQL Interview Mastery as complete, now that it is", () => {
     render(<Projects />);
-    expect(screen.getByText("In development")).toBeInTheDocument();
+    // The page said "in development — the frontend has not been started" long
+    // after both had stopped being true. It is now 232 backend and 26 frontend
+    // tests passing, so the status says so.
+    expect(
+      screen.getByRole("heading", { name: "SQL Interview Mastery" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("In development")).not.toBeInTheDocument();
   });
 });
 

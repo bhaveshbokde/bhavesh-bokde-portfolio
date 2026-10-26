@@ -540,101 +540,90 @@ export const projects: Project[] = [
   },
 
   {
-    slug: "java-dsa-leetcode",
-    name: "Java DSA & LeetCode Library",
-    kind: "independent",
-    status: "maintained",
-    category: "Algorithms study repository",
-    accent: "amber",
-    summary:
-      "99 problems across 33 topic areas, every one with a compilable solution, a JUnit test " +
-      "class, and a comment explaining why that algorithm rather than the obvious alternative.",
-
-    problem:
-      "A study repository rather than a library. The value is meant to be in the reasoning: " +
-      "each solution carries a note on why that approach, what the straightforward alternative " +
-      "costs, and which detail would be easy to get wrong.",
-
-    stack: ["Java 21", "JUnit 5", "Maven", "Checkstyle", "JaCoCo"],
-
-    features: [
-      "99 implemented problems across 33 topic areas (104 distinct LeetCode problems).",
-      "Complete non-premium Blind 75 coverage — 69 of 69.",
-      "One class per problem, one mirrored test class per solution.",
-      "A searchable PROBLEM-INDEX with IDs, difficulty, pattern and file paths.",
-      "Checkstyle in the validate phase, failing the build on any violation.",
-    ],
-
-    architecture: [
-      "Each topic is its own package and each problem its own class. There is no " +
-        "`Solutions.java` holding fifty static methods — the structure is meant to be " +
-        "navigable six months later.",
-      "No database, container, broker or network access is needed. The only runtime dependency " +
-        "is the JDK, and JUnit 5 is the sole test dependency.",
-      "The Checkstyle ruleset is deliberately small: naming, imports, and the checks that catch " +
-        "real defects (switch fall-through, equals without hashCode, empty catch blocks, " +
-        "assignment inside a condition). It does not demand Javadoc on every member, which on " +
-        "an algorithms repository generates noise rather than signal.",
-    ],
-
-    testing: [
-      "751 tests, all passing, run by `./mvnw clean test`.",
-      "Coverage is measured by JaCoCo and reported, never asserted at a threshold.",
-    ],
-
-    metrics: [
-      { label: "Problems", value: "99", source: "33 topic areas" },
-      { label: "Tests", value: "751 passing", source: "Maven Surefire" },
-      { label: "Line coverage", value: "98.6%", source: "measured by JaCoCo" },
-      { label: "Blind 75", value: "69/69", source: "non-premium problems" },
-    ],
-
-    links: [
-      {
-        label: "Repository",
-        url: "https://github.com/bhaveshbokde/java-dsa-leetcode",
-        kind: "repository",
-      },
-    ],
-
-    preview: "/projects/dsa.svg",
-    previewAlt:
-      "Grid visualisation of 33 algorithm topic areas with problem counts and a difficulty " +
-      "distribution of 24 easy, 67 medium and 11 hard.",
-
-    order: 5,
-  },
-
-  {
     slug: "sql-interview-mastery",
-    name: "SQL Interview Mastery Lab",
+    name: "SQL Interview Mastery",
     kind: "independent",
-    status: "in-development",
+    status: "complete",
     category: "Interactive learning platform",
     accent: "violet",
     summary:
-      "An interactive SQL learning and interview-preparation application with a curriculum " +
-      "engine and a sandboxed query playground. In development — the backend is taking shape " +
-      "and the frontend has not been started.",
+      "An interactive SQL learning application with a real editor that runs your query against " +
+      "a real PostgreSQL database — and where no expected output was ever typed by a human.",
 
     problem:
-      "Most SQL practice is either a static list of questions or a quiz that marks string " +
-      "equality. The intent here is a curriculum with a real playground behind it: you write " +
-      "the query, it runs against a real dataset, and the result is evaluated rather than " +
-      "compared to a stored answer string.",
+      "Written SQL tutorials have a defect that is invisible to review: a result table that " +
+      "the query does not actually produce. A plausible wrong result reads exactly like a right " +
+      "one, so it survives proofreading — and a learner who runs the example, gets something " +
+      "different and concludes they have misunderstood is worse off than if the example had " +
+      "never been written.",
 
-    stack: ["Java 21", "Spring Boot", "PostgreSQL", "Spring JDBC", "Maven", "Python"],
+    stack: [
+      "Java 21",
+      "Spring Boot",
+      "PostgreSQL",
+      "Flyway",
+      "React 18",
+      "TypeScript",
+      "Vite",
+      "CodeMirror",
+      "JUnit 5",
+      "Vitest",
+    ],
 
     features: [
-      "Curriculum loading, validation and bootstrap from structured definitions.",
-      "Problem and quiz endpoints over the curriculum.",
-      "A query playground with configurable execution limits.",
-      "Dataset generation tooling.",
+      "Curriculum across 9 modules, from the relational model to window functions, recursive CTEs, MVCC and isolation levels, execution plans and JSONB indexing.",
+      "A CodeMirror SQL editor that executes against a real database and returns real rows.",
+      "43 quiz questions with scoring, and practice problems evaluated on the result set rather than on string equality.",
+      "Progress tracking with a spaced-revision scheduler.",
+      "Server-enforced execution limits, surfaced in the UI so a learner knows why a query was cut off.",
+    ],
+
+    architecture: [
+      "Every SQL statement in every lesson, exercise, solution and wrong-answer demonstration " +
+        "is executed against the real dataset at record time, and whatever PostgreSQL returned " +
+        "is what the page displays. There are 454 recorded outputs, and the application " +
+        "**refuses to start** if any statement in the curriculum lacks one. Showing a wrong " +
+        "result table stops being a thing that can happen by accident.",
+      "The playground runs under a different database identity from the rest of the " +
+        "application. Spring's `DataSourceAutoConfiguration` is explicitly excluded so that " +
+        "separation cannot be undone by a default — the security model rests on the playground " +
+        "never holding the application's privileges.",
+      "Answers are compared as result sets, not as text. Two queries that reach the same rows " +
+        "by different routes both pass, which is the behaviour a learner expects and the " +
+        "behaviour a string comparison cannot provide.",
+    ],
+
+    implementation: [
+      "Every limit is enforced on the server: a request from curl gets exactly the same " +
+        "treatment as one from the UI. The frontend only displays the limits; it never decides " +
+        "them.",
+      "`statement_timeout` is set on the connection, so a runaway query is cancelled by " +
+        "PostgreSQL rather than by abandoning a thread — the work actually stops.",
+      "Row count is bounded with `Statement.setMaxRows`, which stops the JDBC driver " +
+        "materialising more than the cap, so a SELECT over a large join cannot exhaust the heap.",
+      "Statement length is checked before parsing, because the parser is itself an attack " +
+        "surface.",
+      "A schema allowlist rejects any reference outside the learning schema — including the " +
+        "schema where the solutions live, and `pg_catalog`.",
+      "Concurrent playground queries are capped process-wide and refused rather than queued, " +
+        "so a burst cannot tie up every connection in the learner pool.",
+      "Versioned Flyway migrations own the schema, with the grants resolved to whichever role " +
+        "the deployment provisioned.",
     ],
 
     testing: [
-      "Work in progress. No coverage figure is quoted here because there is not yet a " +
-        "meaningful one to quote.",
+      "232 backend tests and 26 frontend tests, all passing — covering input validation, " +
+        "result comparison, learner isolation, the revision scheduler, and the playground API.",
+      "Coverage is not quoted: JaCoCo cannot instrument the SQL parser dependency (a generated " +
+        "method exceeds the JVM method size limit), so any figure would be measured over an " +
+        "incomplete set and would overstate what was actually checked.",
+    ],
+
+    metrics: [
+      { label: "Backend tests", value: "232 passing", source: "Maven Surefire" },
+      { label: "Frontend tests", value: "26 passing", source: "Vitest" },
+      { label: "Recorded outputs", value: "454", source: "executed, never hand-written" },
+      { label: "Quiz questions", value: "43", source: "across 9 modules" },
     ],
 
     links: [
@@ -647,9 +636,15 @@ export const projects: Project[] = [
 
     preview: "/projects/sql-lab.svg",
     previewAlt:
-      "Diagram of the SQL Interview Mastery Lab: a curriculum service and an evaluation service " +
-      "over a sandboxed query playground running against a generated dataset.",
+      "Diagram of SQL Interview Mastery: a curriculum service and an evaluation service over a " +
+      "sandboxed query playground running against a real PostgreSQL dataset.",
 
-    order: 6,
+    lessons: [
+      "The most valuable property of this project is a negative one — it cannot show you a result its own database would not produce. Correctness guarantees are worth more when they are structural than when they are a review checklist.",
+      "Running a learner's SQL safely is a database problem, not a string-filtering problem. Timeouts, row caps and schema allowlists belong where the query executes, under an identity that could not do damage even if the validation were bypassed.",
+      "Evaluating a result set rather than a string is more work and the only approach that does not punish a correct answer for being phrased differently.",
+    ],
+
+    order: 5,
   },
 ];

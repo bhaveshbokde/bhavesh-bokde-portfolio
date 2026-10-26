@@ -271,7 +271,6 @@ test.describe("project pages", () => {
     "finsight",
     "ecommerce-backend",
     "notification-service",
-    "java-dsa-leetcode",
     "sql-interview-mastery",
   ];
 
@@ -310,10 +309,29 @@ test.describe("project pages", () => {
     );
   });
 
-  test("the unfinished project is not described as complete", async ({ page }) => {
+  test("SQL Mastery is described as complete, and backs it with evidence", async ({
+    page,
+  }) => {
+    // It was labelled "in development — the frontend has not been started"
+    // long after both had stopped being true. Verified before changing it:
+    // 232 backend tests and 26 frontend tests passing, and a frontend that
+    // typechecks and builds.
     await page.goto("/projects/sql-interview-mastery");
-    await expect(page.getByText("In development").first()).toBeVisible();
-    await expect(page.getByText("Complete", { exact: true })).toHaveCount(0);
+
+    await expect(page.getByText("Complete", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("In development")).toHaveCount(0);
+
+    // A status claim should be accompanied by the numbers behind it.
+    await expect(page.getByText("232 passing").first()).toBeVisible();
+    await expect(page.getByText("26 passing").first()).toBeVisible();
+  });
+
+  test("no project claims a coverage figure it cannot measure", async ({ page }) => {
+    await page.goto("/projects/sql-interview-mastery");
+    const text = await page.locator("body").innerText();
+    // JaCoCo cannot instrument the SQL parser dependency, so there is no
+    // honest coverage number for this project and none is shown.
+    expect(text).not.toMatch(/\d+(\.\d+)?% line coverage/);
   });
 });
 
@@ -331,6 +349,30 @@ test.describe("404", () => {
   test("an unknown project slug 404s too", async ({ page }) => {
     const response = await page.goto("/projects/not-a-real-project");
     expect(response?.status()).toBe(404);
+  });
+
+  test("the retired DSA route is gone, not redirected", async ({ page }) => {
+    // Removed from the public site at Bhavesh's request. The local project and
+    // its GitHub repository are untouched — this asserts only that the
+    // portfolio no longer advertises it, and that the route returns a genuine
+    // 404 rather than quietly redirecting somewhere unrelated.
+    const response = await page.goto("/projects/java-dsa-leetcode");
+    expect(response?.status()).toBe(404);
+    expect(page.url()).toContain("/projects/java-dsa-leetcode");
+  });
+
+  test("no page mentions the DSA project anywhere", async ({ page }) => {
+    for (const route of ["/", "/projects/sql-interview-mastery", "/projects/aaconnect"]) {
+      await page.goto(route, { waitUntil: "load" });
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await page.waitForTimeout(500);
+      const text = (await page.locator("body").innerText()).toLowerCase();
+      expect(text, `${route} must not mention LeetCode`).not.toContain("leetcode");
+      expect(text, `${route} must not mention Java DSA`).not.toContain("java dsa");
+    }
+
+    const sitemap = await (await page.request.get("/sitemap.xml")).text();
+    expect(sitemap).not.toContain("java-dsa-leetcode");
   });
 });
 
