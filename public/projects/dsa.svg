@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 625" width="1000" height="625" role="img" aria-label="Java DSA library: 99 problems across 33 topic areas, 751 passing tests, 98.6 percent line coverage, complete non-premium Blind 75 coverage, and a difficulty mix of 24 easy, 67 medium and 11 hard.">
+  <title>Java DSA &amp; LeetCode library — coverage at a glance</title>
+
+  <defs>
+    <linearGradient id="ds-bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f0b35b"/>
+      <stop offset="100%" stop-color="#f0b35b" stop-opacity="0.45"/>
+    </linearGradient>
+    <pattern id="ds-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0 H0 V40" fill="none" stroke="#1e2431" stroke-width="1" opacity="0.5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1000" height="625" fill="#080a0f"/>
+  <rect width="1000" height="625" fill="url(#ds-grid)"/>
+  <ellipse cx="500" cy="300" rx="400" ry="230" fill="#f0b35b" opacity="0.035"/>
+
+  <text x="54" y="56" fill="#f0b35b" font-family="ui-monospace, monospace" font-size="11.5" letter-spacing="3">JAVA DSA · ONE CLASS PER PROBLEM, ONE TEST PER CLASS</text>
+  <text x="54" y="84" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="22" font-weight="700">33 topic areas, and a reason written next to every answer</text>
+
+  <!-- ============ topic grid ============ -->
+  <text x="54" y="124" fill="#68728a" font-family="ui-monospace, monospace" font-size="10" letter-spacing="2">TOPIC AREAS</text>
+
+  <g font-family="ui-monospace, monospace" font-size="10" fill="#a3adc4">
+    <!-- row 1 -->
+    <rect x="54" y="136" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="68" y="157">arrays</text>
+    <rect x="200" y="136" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="214" y="157">strings</text>
+    <rect x="346" y="136" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="360" y="157">hashing</text>
+    <rect x="492" y="136" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="506" y="157">twopointers</text>
+    <rect x="638" y="136" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="652" y="157">slidingwindow</text>
+    <rect x="784" y="136" width="162" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="798" y="157">prefixsum</text>
+    <!-- row 2 -->
+    <rect x="54" y="178" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="68" y="199">binarysearch</text>
+    <rect x="200" y="178" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="214" y="199">sorting</text>
+    <rect x="346" y="178" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="360" y="199">matrix</text>
+    <rect x="492" y="178" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="506" y="199">linkedlist</text>
+    <rect x="638" y="178" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="652" y="199">stacks</text>
+    <rect x="784" y="178" width="162" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="798" y="199">queues</text>
+    <!-- row 3 -->
+    <rect x="54" y="220" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="68" y="241">monotonic</text>
+    <rect x="200" y="220" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="214" y="241">recursion</text>
+    <rect x="346" y="220" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="360" y="241">backtracking</text>
+    <rect x="492" y="220" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="506" y="241">bitmanip</text>
+    <rect x="638" y="220" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="652" y="241">greedy</text>
+    <rect x="784" y="220" width="162" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="798" y="241">intervals</text>
+    <!-- row 4 -->
+    <rect x="54" y="262" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="68" y="283">trees</text>
+    <rect x="200" y="262" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="214" y="283">bst</text>
+    <rect x="346" y="262" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="360" y="283">heaps</text>
+    <rect x="492" y="262" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="506" y="283">tries</text>
+    <rect x="638" y="262" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="652" y="283">graphs</text>
+    <rect x="784" y="262" width="162" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="798" y="283">unionfind</text>
+    <!-- row 5 -->
+    <rect x="54" y="304" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="68" y="325">dp</text>
+    <rect x="200" y="304" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="214" y="325">dpadvanced</text>
+    <rect x="346" y="304" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="360" y="325">math</text>
+    <rect x="492" y="304" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="506" y="325">stringmatching</text>
+    <rect x="638" y="304" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="652" y="325">design</text>
+    <rect x="784" y="304" width="162" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="798" y="325">advanced</text>
+    <!-- row 6 -->
+    <rect x="54" y="346" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="68" y="367">graphsadvanced</text>
+    <rect x="200" y="346" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="214" y="367">javacore</text>
+    <rect x="346" y="346" width="136" height="34" rx="7" fill="#141821" stroke="#2a3140"/><text x="360" y="367">fundamentals</text>
+    <rect x="492" y="346" width="454" height="34" rx="7" fill="#0d1017" stroke="#1e2431"/>
+    <text x="506" y="367" fill="#4e566b">every topic is its own package — no Solutions.java with fifty static methods</text>
+  </g>
+
+  <!-- ============ difficulty mix ============ -->
+  <text x="54" y="418" fill="#68728a" font-family="ui-monospace, monospace" font-size="10" letter-spacing="2">DIFFICULTY MIX</text>
+
+  <rect x="54" y="430" width="892" height="26" rx="6" fill="#0d1017" stroke="#1e2431"/>
+  <rect x="55" y="431" width="214" height="24" rx="5" fill="#4ad6a0" opacity="0.45"/>
+  <rect x="269" y="431" width="597" height="24" fill="#f0b35b" opacity="0.45"/>
+  <rect x="866" y="431" width="79" height="24" rx="5" fill="#a98bff" opacity="0.5"/>
+
+  <text x="68" y="447" fill="#0b0e14" font-family="ui-monospace, monospace" font-size="11" font-weight="700">24 easy</text>
+  <text x="283" y="447" fill="#0b0e14" font-family="ui-monospace, monospace" font-size="11" font-weight="700">67 medium</text>
+  <text x="879" y="447" fill="#0b0e14" font-family="ui-monospace, monospace" font-size="11" font-weight="700">11 hard</text>
+
+  <!-- ============ metrics ============ -->
+  <rect x="54" y="482" width="892" height="76" rx="13" fill="#0d1017" stroke="#1e2431"/>
+
+  <text x="86" y="508" fill="#4e566b" font-family="ui-monospace, monospace" font-size="9.5" letter-spacing="1.8">PROBLEMS</text>
+  <text x="86" y="536" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="19" font-weight="700">99</text>
+  <text x="120" y="536" fill="#68728a" font-family="ui-monospace, monospace" font-size="10">· 33 areas</text>
+
+  <line x1="276" y1="498" x2="276" y2="542" stroke="#1e2431"/>
+  <text x="308" y="508" fill="#4e566b" font-family="ui-monospace, monospace" font-size="9.5" letter-spacing="1.8">TESTS</text>
+  <text x="308" y="536" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="19" font-weight="700">751</text>
+  <text x="356" y="536" fill="#68728a" font-family="ui-monospace, monospace" font-size="10">· all passing</text>
+
+  <line x1="498" y1="498" x2="498" y2="542" stroke="#1e2431"/>
+  <text x="530" y="508" fill="#4e566b" font-family="ui-monospace, monospace" font-size="9.5" letter-spacing="1.8">LINE COVERAGE</text>
+  <text x="530" y="536" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="19" font-weight="700">98.6%</text>
+  <text x="602" y="536" fill="#68728a" font-family="ui-monospace, monospace" font-size="10">· JaCoCo</text>
+
+  <line x1="720" y1="498" x2="720" y2="542" stroke="#1e2431"/>
+  <text x="752" y="508" fill="#4e566b" font-family="ui-monospace, monospace" font-size="9.5" letter-spacing="1.8">BLIND 75 (NON-PREMIUM)</text>
+  <text x="752" y="536" fill="#4ad6a0" font-family="system-ui, sans-serif" font-size="19" font-weight="700">69/69</text>
+  <text x="818" y="536" fill="#68728a" font-family="ui-monospace, monospace" font-size="10">· complete</text>
+
+  <text x="500" y="590" text-anchor="middle" fill="#4e566b" font-family="ui-monospace, monospace" font-size="10">Coverage is measured and reported, never asserted at a threshold. Checkstyle fails the build on any violation.</text>
+</svg>

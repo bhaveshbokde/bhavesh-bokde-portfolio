@@ -1,0 +1,348 @@
+@import "tailwindcss";
+
+/* =====================================================================
+   Design tokens
+   =====================================================================
+
+   A deliberately small palette. Graphite and near-black carry the page;
+   azure and violet are the only saturated colours and they are spent
+   sparingly, which is what keeps a glow looking like lighting rather than
+   like a neon sign.
+
+   Every token below is a real Tailwind utility: `--color-ink-900` gives you
+   `bg-ink-900`, `text-ink-900`, `border-ink-900` and so on.
+   ===================================================================== */
+
+@theme {
+  /* --- surfaces: near-black through graphite ----------------------- */
+  --color-ink-950: #05060a;
+  --color-ink-900: #090b11;
+  --color-ink-850: #0d1017;
+  --color-ink-800: #12161f;
+  --color-ink-750: #171c27;
+  --color-ink-700: #1e2431;
+  --color-ink-600: #2a3140;
+  --color-ink-500: #3a4354;
+
+  /* --- text: cool greys, never pure white -------------------------- */
+  --color-mist-50: #f2f5fb;
+  --color-mist-100: #e2e7f2;
+  --color-mist-200: #c6cedf;
+  --color-mist-300: #a3adc4;
+  --color-mist-400: #828da6;
+  --color-mist-500: #68728a;
+  --color-mist-600: #4e566b;
+
+  /* --- accents ------------------------------------------------------ */
+  --color-azure-300: #8ab8ff;
+  --color-azure-400: #5b9cff;
+  --color-azure-500: #3b7df5;
+  --color-azure-600: #2a5fd0;
+
+  --color-iris-300: #c3abff;
+  --color-iris-400: #a98bff;
+  --color-iris-500: #8b5cf6;
+  --color-iris-600: #6d3fd4;
+
+  --color-aqua-400: #4fd1e0;
+  --color-amber-glow: #f0b35b;
+  --color-jade-400: #4ad6a0;
+
+  /* --- typography --------------------------------------------------- */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo,
+    Consolas, monospace;
+
+  /* Display sizes. Clamped so the hero scales with the viewport instead
+     of stepping at breakpoints — it is the difference between "responsive"
+     and "cinematic". */
+  --text-display-sm: clamp(1.75rem, 1.2rem + 2.4vw, 2.75rem);
+  --text-display: clamp(2rem, 1.3rem + 3.1vw, 3.5rem);
+  --text-display-lg: clamp(2.5rem, 1.35rem + 4.3vw, 4.75rem);
+
+  /* --- motion -------------------------------------------------------- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-soft: cubic-bezier(0.45, 0, 0.15, 1);
+
+  --animate-drift: drift 26s ease-in-out infinite;
+  --animate-drift-slow: drift 40s ease-in-out infinite reverse;
+  --animate-pulse-glow: pulse-glow 7s ease-in-out infinite;
+  --animate-sweep: sweep 9s linear infinite;
+  --animate-dash: dash 4s linear infinite;
+  --animate-caret: caret 1.1s step-end infinite;
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(3%, -4%, 0) scale(1.06);
+  }
+  66% {
+    transform: translate3d(-3%, 3%, 0) scale(0.97);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes sweep {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* =====================================================================
+   Base
+   ===================================================================== */
+
+@layer base {
+  * {
+    border-color: var(--color-ink-700);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* The sticky header is ~4.5rem; without this, anchor targets land
+       underneath it. */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-ink-950);
+    color: var(--color-mist-200);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    font-variant-ligatures: contextual;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Stops the page sliding sideways when a decorative blob overflows. */
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.028em;
+    color: var(--color-mist-50);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* One focus style for the whole site, visible against every surface and
+     never removed. `:focus-visible` means it shows for keyboard users
+     without putting a ring around every mouse click. */
+  :focus-visible {
+    outline: 2px solid var(--color-azure-400);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-iris-500) 45%, transparent);
+    color: var(--color-mist-50);
+  }
+
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ink-950);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-ink-700);
+    border-radius: 99px;
+    border: 3px solid var(--color-ink-950);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ink-600);
+  }
+}
+
+/* =====================================================================
+   Component utilities
+   ===================================================================== */
+
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 80rem;
+  padding-inline: 1.25rem;
+
+  @media (min-width: 768px) {
+    padding-inline: 2rem;
+  }
+  @media (min-width: 1280px) {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* A hairline that fades out at both ends. Used as a section divider —
+   a solid 1px rule reads as a table border, this reads as light. */
+@utility rule-fade {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in oklab, var(--color-ink-500) 80%, transparent),
+    transparent
+  );
+}
+
+/* The card treatment used across projects, skills and the timeline:
+   a graphite surface, a hairline border, and a very faint inner highlight
+   along the top edge so the card reads as lit from above. */
+@utility surface-card {
+  position: relative;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in oklab, var(--color-ink-600) 75%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-ink-800) 92%, transparent),
+      color-mix(in oklab, var(--color-ink-900) 96%, transparent)
+    );
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in oklab, var(--color-mist-50) 6%, transparent),
+    0 1px 2px 0 rgb(0 0 0 / 0.4);
+}
+
+@utility surface-inset {
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--color-ink-700) 80%, transparent);
+  background: color-mix(in oklab, var(--color-ink-950) 55%, transparent);
+}
+
+/* Text that fades from mist into azure. Used once or twice per page, no more. */
+@utility text-gradient {
+  background-image: linear-gradient(
+    120deg,
+    var(--color-mist-50) 0%,
+    var(--color-mist-100) 38%,
+    var(--color-azure-300) 70%,
+    var(--color-iris-300) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  /* Descenders get clipped by background-clip without a little breathing room. */
+  padding-bottom: 0.08em;
+}
+
+@utility text-gradient-muted {
+  background-image: linear-gradient(
+    120deg,
+    var(--color-mist-200) 0%,
+    var(--color-mist-400) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* The fine grid that sits behind the hero. Pure CSS, no image request. */
+@utility bg-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklab, var(--color-ink-600) 40%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-ink-600) 40%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 56px 56px;
+}
+
+@utility bg-dots {
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--color-ink-500) 55%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
+
+/* =====================================================================
+   Reduced motion
+   =====================================================================
+
+   Honoured properly: animations are cancelled rather than sped up, and
+   smooth scrolling is turned off too — anchor jumps are a motion effect
+   and they are the one most likely to cause trouble.
+
+   Components additionally read the preference in JS (see
+   `usePrefersReducedMotion`) so Framer Motion never starts an animation
+   in the first place. This block is the belt to that braces: it covers
+   CSS animations and anything that slips through.
+   ===================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Decorative-only layers are hidden outright rather than frozen
+     mid-animation, which is usually the more comfortable result. */
+  [data-motion="decorative"] {
+    display: none !important;
+  }
+}
+
+/* Print: the resume is the artefact for paper, but a printed page should
+   still be legible rather than a sheet of black ink. */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  [data-motion="decorative"],
+  header[data-site-header],
+  footer[data-site-footer] {
+    display: none !important;
+  }
+}

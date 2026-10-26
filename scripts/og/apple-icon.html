@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Apple touch icon source</title>
+    <!-- Source for src/app/apple-icon.png. See scripts/generate-images.sh. -->
+    <style>
+      @font-face {
+        font-family: "Space Grotesk";
+        src: url("../../src/app/fonts/space-grotesk-latin-var.woff2") format("woff2");
+        font-weight: 300 700;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { width: 180px; height: 180px; overflow: hidden; }
+      .icon {
+        width: 180px; height: 180px;
+        background: linear-gradient(145deg, #12161f, #05060a);
+        display: grid; place-items: center; position: relative;
+      }
+      svg { position: absolute; inset: 0; }
+      span {
+        position: relative;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700; font-size: 64px; letter-spacing: -3px;
+        background-image: linear-gradient(135deg, #5b9cff, #a98bff);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="icon">
+      <svg viewBox="0 0 180 180" fill="none">
+        <path d="M90 31 L135 57.5 V110.5 L90 137 L45 110.5 V57.5 Z"
+              stroke="#5b9cff" stroke-width="3" stroke-linejoin="round" opacity="0.38" />
+      </svg>
+      <span>BB</span>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Open Graph card source</title>
+    <!--
+      Source for public/og.png. Rendered to PNG by scripts/generate-images.sh.
+
+      This is a plain HTML file rather than a Next route because the OG image
+      should be a committed static asset: it changes about once a year, and
+      generating it on every build would be work done 10,000 times to produce
+      the same bytes.
+
+      Fonts are loaded from the same files the site ships, so the card matches
+      the real thing rather than approximating it.
+    -->
+    <style>
+      @font-face {
+        font-family: "Space Grotesk";
+        src: url("../../src/app/fonts/space-grotesk-latin-var.woff2") format("woff2");
+        font-weight: 300 700;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("../../src/app/fonts/inter-latin-var.woff2") format("woff2");
+        font-weight: 100 900;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("../../src/app/fonts/jetbrains-mono-latin-var.woff2") format("woff2");
+        font-weight: 100 800;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #05060a;
+        font-family: "Inter", system-ui, sans-serif;
+        color: #c6cedf;
+      }
+
+      .card {
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        padding: 58px 76px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+      }
+
+      /* grid */
+      .grid {
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(to right, rgba(42,49,64,0.55) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(42,49,64,0.55) 1px, transparent 1px);
+        background-size: 56px 56px;
+        -webkit-mask-image: radial-gradient(ellipse 120% 80% at 50% 0%, #000 20%, transparent 80%);
+      }
+
+      /* lighting */
+      .glow-a, .glow-b {
+        position: absolute; border-radius: 50%; filter: blur(120px);
+      }
+      .glow-a {
+        width: 640px; height: 640px; top: -300px; left: -220px;
+        background: radial-gradient(circle, #3b7df5 0%, transparent 68%);
+        opacity: 0.30;
+      }
+      .glow-b {
+        width: 620px; height: 620px; bottom: -320px; right: -180px;
+        background: radial-gradient(circle, #8b5cf6 0%, transparent 68%);
+        opacity: 0.32;
+      }
+
+      .top { position: relative; display: flex; align-items: center; gap: 18px; }
+
+      .monogram {
+        width: 60px; height: 60px; border-radius: 15px;
+        border: 1px solid #2a3140; background: #0d1017;
+        display: grid; place-items: center;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700; font-size: 22px; letter-spacing: -0.5px;
+        background-image: linear-gradient(135deg, rgba(91,156,255,0.16), rgba(139,92,246,0.16));
+        color: #e2e7f2;
+      }
+
+      .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px; letter-spacing: 4px; text-transform: uppercase;
+        color: #5b9cff;
+      }
+
+      .middle { position: relative; }
+
+      h1 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 76px; line-height: 0.98; font-weight: 700;
+        letter-spacing: -2.6px; color: #f2f5fb;
+      }
+
+      h2 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 44px; line-height: 1.05; font-weight: 600;
+        letter-spacing: -1.4px; margin-top: 10px;
+        background-image: linear-gradient(110deg, #e2e7f2 0%, #8ab8ff 55%, #c3abff 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+
+      p.summary {
+        margin-top: 20px; max-width: 760px;
+        font-size: 20px; line-height: 1.45; color: #828da6;
+      }
+
+      .bottom {
+        position: relative;
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 24px;
+        border-top: 1px solid #1e2431; padding-top: 22px;
+      }
+
+      .tags { display: flex; gap: 10px; flex-wrap: wrap; }
+
+      .tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px; padding: 7px 14px; border-radius: 999px;
+        border: 1px solid #2a3140; background: rgba(18,22,31,0.8); color: #a3adc4;
+      }
+
+      .where {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 15px; color: #4e566b; white-space: nowrap;
+      }
+
+      /* the hex mark echoing the hero diagram */
+      .hex {
+        position: absolute; right: -56px; top: 104px;
+        width: 410px; height: 410px; opacity: 0.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="grid"></div>
+      <div class="glow-a"></div>
+      <div class="glow-b"></div>
+
+      <svg class="hex" viewBox="0 0 400 400" fill="none">
+        <defs>
+          <linearGradient id="h" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#5b9cff" />
+            <stop offset="100%" stop-color="#8b5cf6" />
+          </linearGradient>
+        </defs>
+        <ellipse cx="200" cy="200" rx="170" ry="62" stroke="#2a3140" stroke-dasharray="6 10" />
+        <ellipse cx="200" cy="200" rx="62" ry="170" stroke="#2a3140" stroke-dasharray="6 10" />
+        <path d="M200 104 L283 152 V248 L200 296 L117 248 V152 Z"
+              stroke="url(#h)" stroke-width="2.5" stroke-linejoin="round" />
+        <path d="M200 136 L255 168 V232 L200 264 L145 232 V168 Z"
+              stroke="#5b9cff" stroke-width="1.25" opacity="0.4" stroke-linejoin="round" />
+        <circle cx="200" cy="200" r="9" fill="url(#h)" />
+      </svg>
+
+      <div class="top">
+        <div class="monogram">BB</div>
+        <div class="eyebrow">Java Backend Engineer</div>
+      </div>
+
+      <div class="middle">
+        <h1>Bhavesh Bokde</h1>
+        <h2>Spring Boot · REST APIs · Microservices</h2>
+        <p class="summary">
+          Backend services for India's Account Aggregator ecosystem — consent flows,
+          provider integrations, and the reliability work that keeps them standing up.
+        </p>
+      </div>
+
+      <div class="bottom">
+        <div class="tags">
+          <span class="tag">Java</span>
+          <span class="tag">Spring Boot</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">Redis</span>
+          <span class="tag">Kubernetes</span>
+        </div>
+        <div class="where">Pune, India</div>
+      </div>
+    </div>
+  </body>
+</html>

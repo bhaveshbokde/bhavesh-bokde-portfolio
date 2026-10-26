@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 625" width="1000" height="625" role="img" aria-label="SQL Interview Mastery Lab: a curriculum service and an evaluation service sit over a sandboxed query playground that runs submitted SQL against a generated dataset. The backend is in progress and the frontend has not been started.">
+  <title>SQL Interview Mastery Lab — in development</title>
+
+  <defs>
+    <pattern id="sq-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0 H0 V40" fill="none" stroke="#1e2431" stroke-width="1" opacity="0.5"/>
+    </pattern>
+    <marker id="sq-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#a98bff"/>
+    </marker>
+    <linearGradient id="sq-flow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#a98bff" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1000" height="625" fill="#080a0f"/>
+  <rect width="1000" height="625" fill="url(#sq-grid)"/>
+  <ellipse cx="500" cy="300" rx="400" ry="230" fill="#8b5cf6" opacity="0.045"/>
+
+  <text x="54" y="56" fill="#a98bff" font-family="ui-monospace, monospace" font-size="11.5" letter-spacing="3">SQL INTERVIEW MASTERY LAB</text>
+
+  <!-- status banner -->
+  <rect x="54" y="72" width="330" height="30" rx="8" fill="#1a1508" stroke="#f0b35b" stroke-width="1.2"/>
+  <circle cx="74" cy="87" r="4" fill="#f0b35b"/>
+  <text x="88" y="92" fill="#f0b35b" font-family="ui-monospace, monospace" font-size="11">IN DEVELOPMENT — not finished, not deployed</text>
+
+  <text x="54" y="138" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="22" font-weight="700">Run the query. Evaluate the result, not the string.</text>
+
+  <!-- ============ client ============ -->
+  <rect x="54" y="176" width="178" height="74" rx="12" fill="#0f131b" stroke="#2a3140" stroke-dasharray="6 5"/>
+  <text x="143" y="204" text-anchor="middle" fill="#828da6" font-family="system-ui, sans-serif" font-size="13.5" font-weight="600">Frontend</text>
+  <text x="143" y="224" text-anchor="middle" fill="#68728a" font-family="ui-monospace, monospace" font-size="10">not started</text>
+  <text x="143" y="240" text-anchor="middle" fill="#4e566b" font-family="ui-monospace, monospace" font-size="9.5">directory is empty</text>
+
+  <path d="M232 213 H 282" fill="none" stroke="#2a3140" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#sq-arrow)"/>
+
+  <!-- ============ API ============ -->
+  <rect x="286" y="176" width="430" height="60" rx="12" fill="#12161f" stroke="#8b5cf6" stroke-width="1.5"/>
+  <text x="501" y="202" text-anchor="middle" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="14.5" font-weight="700">Spring Boot REST API</text>
+  <text x="501" y="221" text-anchor="middle" fill="#828da6" font-family="ui-monospace, monospace" font-size="10">curriculum · problems · quizzes · playground</text>
+
+  <path d="M400 236 V 268" fill="none" stroke="url(#sq-flow)" stroke-width="1.8" marker-end="url(#sq-arrow)"/>
+  <path d="M602 236 V 268" fill="none" stroke="url(#sq-flow)" stroke-width="1.8" marker-end="url(#sq-arrow)"/>
+
+  <!-- ============ services ============ -->
+  <rect x="286" y="272" width="200" height="96" rx="12" fill="#141821" stroke="#2a3140"/>
+  <rect x="286" y="272" width="200" height="3" rx="1.5" fill="#a98bff" opacity="0.7"/>
+  <text x="306" y="300" fill="#e2e7f2" font-family="system-ui, sans-serif" font-size="13.5" font-weight="600">Curriculum</text>
+  <text x="306" y="320" fill="#68728a" font-family="ui-monospace, monospace" font-size="10">load · validate · bootstrap</text>
+  <text x="306" y="338" fill="#68728a" font-family="ui-monospace, monospace" font-size="10">structured definitions</text>
+  <text x="306" y="356" fill="#68728a" font-family="ui-monospace, monospace" font-size="10">problem &amp; quiz endpoints</text>
+
+  <rect x="516" y="272" width="200" height="96" rx="12" fill="#141821" stroke="#2a3140"/>
+  <rect x="516" y="272" width="200" height="3" rx="1.5" fill="#4fd1e0" opacity="0.7"/>
+  <text x="536" y="300" fill="#e2e7f2" font-family="system-ui, sans-serif" font-size="13.5" font-weight="600">Evaluation</text>
+  <text x="536" y="320" fill="#68728a" font-family="ui-monospace, monospace" font-size="10">compares result sets</text>
+  <text x="536" y="338" fill="#68728a" font-family="ui-monospace, monospace" font-size="10">not stored answer strings</text>
+  <text x="536" y="356" fill="#68728a" font-family="ui-monospace, monospace" font-size="10">reports what differed</text>
+
+  <path d="M386 368 C 386 400, 430 400, 460 404" fill="none" stroke="url(#sq-flow)" stroke-width="1.8" marker-end="url(#sq-arrow)"/>
+  <path d="M616 368 C 616 400, 572 400, 542 404" fill="none" stroke="url(#sq-flow)" stroke-width="1.8" marker-end="url(#sq-arrow)"/>
+
+  <!-- ============ playground ============ -->
+  <rect x="286" y="408" width="430" height="104" rx="13" fill="#0d1017" stroke="#4fd1e0" stroke-width="1.3" stroke-dasharray="8 5"/>
+  <text x="501" y="432" text-anchor="middle" fill="#4fd1e0" font-family="ui-monospace, monospace" font-size="10.5" letter-spacing="2">SANDBOXED PLAYGROUND</text>
+
+  <rect x="306" y="444" width="390" height="52" rx="9" fill="#0b0e14" stroke="#1e2431"/>
+  <g font-family="ui-monospace, monospace" font-size="11">
+    <text x="320" y="464" fill="#8ab8ff">SELECT</text><text x="372" y="464" fill="#c6cedf">region, SUM(amount)</text>
+    <text x="320" y="480" fill="#8ab8ff">  FROM</text><text x="372" y="480" fill="#c6cedf">orders GROUP BY region;</text>
+  </g>
+
+  <!-- limits -->
+  <rect x="742" y="408" width="204" height="104" rx="13" fill="#141821" stroke="#2a3140"/>
+  <text x="762" y="432" fill="#828da6" font-family="ui-monospace, monospace" font-size="9.5" letter-spacing="1.8">EXECUTION LIMITS</text>
+  <text x="762" y="454" fill="#c6cedf" font-family="ui-monospace, monospace" font-size="10.5">configurable timeout</text>
+  <text x="762" y="472" fill="#c6cedf" font-family="ui-monospace, monospace" font-size="10.5">bounded result size</text>
+  <text x="762" y="490" fill="#c6cedf" font-family="ui-monospace, monospace" font-size="10.5">read-only role</text>
+
+  <!-- dataset -->
+  <rect x="54" y="408" width="204" height="104" rx="13" fill="#141821" stroke="#2a3140"/>
+  <text x="74" y="432" fill="#828da6" font-family="ui-monospace, monospace" font-size="9.5" letter-spacing="1.8">DATASET</text>
+  <text x="74" y="454" fill="#c6cedf" font-family="ui-monospace, monospace" font-size="10.5">PostgreSQL</text>
+  <text x="74" y="472" fill="#c6cedf" font-family="ui-monospace, monospace" font-size="10.5">generated, synthetic</text>
+  <text x="74" y="490" fill="#c6cedf" font-family="ui-monospace, monospace" font-size="10.5">Python tooling</text>
+
+  <path d="M258 460 H 282" fill="none" stroke="#2a3140" stroke-width="1.6"/>
+  <path d="M716 460 H 740" fill="none" stroke="#2a3140" stroke-width="1.6"/>
+
+  <!-- ============ honest status ============ -->
+  <rect x="54" y="540" width="892" height="48" rx="12" fill="#0d1017" stroke="#1e2431"/>
+  <circle cx="78" cy="564" r="4" fill="#f0b35b"/>
+  <text x="94" y="560" fill="#c6cedf" font-family="ui-monospace, monospace" font-size="10.5">Backend taking shape · frontend not started · no coverage figure quoted, because there is not yet a meaningful one.</text>
+  <text x="94" y="577" fill="#4e566b" font-family="ui-monospace, monospace" font-size="10">Nothing on this diagram claims to be finished or deployed.</text>
+</svg>

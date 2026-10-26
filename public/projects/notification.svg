@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 625" width="1000" height="625" role="img" aria-label="Notification service pipeline: the API writes the notification and an outbox event in one transaction, a publisher drains the outbox to Kafka, and a consumer fans out to email, SMS and in-app adapters with separate transient, permanent and dead-letter failure paths.">
+  <title>Notification service — outbox pipeline and three failure classes</title>
+
+  <defs>
+    <linearGradient id="nt-flow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4fd1e0" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#4fd1e0" stop-opacity="0.9"/>
+    </linearGradient>
+    <pattern id="nt-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0 H0 V40" fill="none" stroke="#1e2431" stroke-width="1" opacity="0.5"/>
+    </pattern>
+    <marker id="nt-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#4fd1e0"/>
+    </marker>
+    <marker id="nt-arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#f0b35b"/>
+    </marker>
+    <marker id="nt-arrow-dim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#68728a"/>
+    </marker>
+  </defs>
+
+  <rect width="1000" height="625" fill="#080a0f"/>
+  <rect width="1000" height="625" fill="url(#nt-grid)"/>
+  <ellipse cx="500" cy="280" rx="420" ry="220" fill="#4fd1e0" opacity="0.04"/>
+
+  <text x="54" y="56" fill="#4fd1e0" font-family="ui-monospace, monospace" font-size="11.5" letter-spacing="3">NOTIFICATION SERVICE · ACCEPTED MEANS DELIVERED</text>
+  <text x="54" y="84" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="22" font-weight="700">An outbox, and three failures that never share a code path</text>
+
+  <!-- ============ ingress ============ -->
+  <rect x="54" y="124" width="138" height="56" rx="11" fill="#141821" stroke="#2a3140"/>
+  <text x="123" y="148" text-anchor="middle" fill="#e2e7f2" font-family="system-ui, sans-serif" font-size="13" font-weight="600">REST API</text>
+  <text x="123" y="166" text-anchor="middle" fill="#68728a" font-family="ui-monospace, monospace" font-size="9.5">202 Accepted</text>
+
+  <path d="M192 152 H 232" fill="none" stroke="url(#nt-flow)" stroke-width="2" marker-end="url(#nt-arrow)"/>
+
+  <rect x="236" y="124" width="124" height="56" rx="11" fill="#141821" stroke="#2a3140"/>
+  <text x="298" y="146" text-anchor="middle" fill="#c6cedf" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Rate limiter</text>
+  <text x="298" y="164" text-anchor="middle" fill="#68728a" font-family="ui-monospace, monospace" font-size="9.5">Redis · 429</text>
+
+  <path d="M360 152 H 400" fill="none" stroke="url(#nt-flow)" stroke-width="2" marker-end="url(#nt-arrow)"/>
+
+  <rect x="404" y="124" width="150" height="56" rx="11" fill="#141821" stroke="#2a3140"/>
+  <text x="479" y="146" text-anchor="middle" fill="#c6cedf" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Idempotency</text>
+  <text x="479" y="164" text-anchor="middle" fill="#68728a" font-family="ui-monospace, monospace" font-size="9.5">UNIQUE (user, endpoint, key)</text>
+
+  <path d="M479 180 V 214" fill="none" stroke="url(#nt-flow)" stroke-width="2" marker-end="url(#nt-arrow)"/>
+
+  <!-- ============ transaction ============ -->
+  <rect x="300" y="218" width="358" height="104" rx="14" fill="#0d1017" stroke="#4fd1e0" stroke-width="1.4" stroke-dasharray="8 5"/>
+  <text x="479" y="243" text-anchor="middle" fill="#4fd1e0" font-family="ui-monospace, monospace" font-size="10.5" letter-spacing="2">ONE POSTGRESQL TRANSACTION</text>
+
+  <rect x="320" y="256" width="156" height="48" rx="9" fill="#141821" stroke="#2a3140"/>
+  <text x="398" y="276" text-anchor="middle" fill="#e2e7f2" font-family="ui-monospace, monospace" font-size="11.5">notifications</text>
+  <text x="398" y="293" text-anchor="middle" fill="#68728a" font-family="ui-monospace, monospace" font-size="9.5">the record</text>
+
+  <rect x="486" y="256" width="156" height="48" rx="9" fill="#141821" stroke="#2a3140"/>
+  <text x="564" y="276" text-anchor="middle" fill="#e2e7f2" font-family="ui-monospace, monospace" font-size="11.5">outbox_events</text>
+  <text x="564" y="293" text-anchor="middle" fill="#68728a" font-family="ui-monospace, monospace" font-size="9.5">the intent</text>
+
+  <!-- ============ publisher + kafka + consumer ============ -->
+  <path d="M658 270 H 700" fill="none" stroke="url(#nt-flow)" stroke-width="2" marker-end="url(#nt-arrow)"/>
+
+  <rect x="704" y="240" width="152" height="60" rx="11" fill="#141821" stroke="#2a3140"/>
+  <text x="780" y="264" text-anchor="middle" fill="#c6cedf" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Outbox publisher</text>
+  <text x="780" y="282" text-anchor="middle" fill="#68728a" font-family="ui-monospace, monospace" font-size="9.5">acks=all, then PUBLISHED</text>
+
+  <path d="M780 300 V 334" fill="none" stroke="url(#nt-flow)" stroke-width="2" marker-end="url(#nt-arrow)"/>
+
+  <rect x="704" y="338" width="152" height="52" rx="11" fill="#12161f" stroke="#4fd1e0" stroke-width="1.3"/>
+  <text x="780" y="360" text-anchor="middle" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="12.5" font-weight="700">Kafka</text>
+  <text x="780" y="378" text-anchor="middle" fill="#4fd1e0" font-family="ui-monospace, monospace" font-size="9.5">at-least-once</text>
+
+  <path d="M704 364 H 640" fill="none" stroke="url(#nt-flow)" stroke-width="2" marker-end="url(#nt-arrow)"/>
+
+  <rect x="470" y="338" width="166" height="52" rx="11" fill="#141821" stroke="#2a3140"/>
+  <text x="553" y="360" text-anchor="middle" fill="#c6cedf" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Consumer</text>
+  <text x="553" y="378" text-anchor="middle" fill="#68728a" font-family="ui-monospace, monospace" font-size="9.5">idempotent by design</text>
+
+  <path d="M553 390 V 420" fill="none" stroke="url(#nt-flow)" stroke-width="2" marker-end="url(#nt-arrow)"/>
+
+  <!-- ============ channels ============ -->
+  <rect x="404" y="424" width="300" height="44" rx="10" fill="#0f131b" stroke="#2a3140"/>
+  <text x="422" y="442" fill="#828da6" font-family="ui-monospace, monospace" font-size="9.5" letter-spacing="1.5">PROVIDER REGISTRY</text>
+  <rect x="422" y="446" width="80" height="16" rx="4" fill="#171c27" stroke="#2a3140"/>
+  <text x="462" y="458" text-anchor="middle" fill="#4fd1e0" font-family="ui-monospace, monospace" font-size="9">EMAIL</text>
+  <rect x="510" y="446" width="80" height="16" rx="4" fill="#171c27" stroke="#2a3140"/>
+  <text x="550" y="458" text-anchor="middle" fill="#4fd1e0" font-family="ui-monospace, monospace" font-size="9">SMS</text>
+  <rect x="598" y="446" width="88" height="16" rx="4" fill="#171c27" stroke="#2a3140"/>
+  <text x="642" y="458" text-anchor="middle" fill="#4fd1e0" font-family="ui-monospace, monospace" font-size="9">IN_APP</text>
+
+  <!-- ============ three failure classes ============ -->
+  <text x="54" y="222" fill="#828da6" font-family="ui-monospace, monospace" font-size="10" letter-spacing="2">THREE FAILURE CLASSES</text>
+
+  <rect x="54" y="236" width="214" height="60" rx="11" fill="#141821" stroke="#2a3140"/>
+  <rect x="54" y="236" width="3.5" height="60" rx="2" fill="#f0b35b"/>
+  <text x="74" y="259" fill="#f0b35b" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Transient</text>
+  <text x="74" y="277" fill="#68728a" font-family="ui-monospace, monospace" font-size="9.5">timeout · 5xx · rate limit</text>
+  <text x="74" y="290" fill="#828da6" font-family="ui-monospace, monospace" font-size="9.5">→ retry, backed off</text>
+
+  <rect x="54" y="306" width="214" height="60" rx="11" fill="#141821" stroke="#2a3140"/>
+  <rect x="54" y="306" width="3.5" height="60" rx="2" fill="#68728a"/>
+  <text x="74" y="329" fill="#c6cedf" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Permanent</text>
+  <text x="74" y="347" fill="#68728a" font-family="ui-monospace, monospace" font-size="9.5">bad recipient · rejected</text>
+  <text x="74" y="360" fill="#828da6" font-family="ui-monospace, monospace" font-size="9.5">→ fail now, don't retry</text>
+
+  <rect x="54" y="376" width="214" height="68" rx="11" fill="#1a1012" stroke="#8b5cf6" stroke-width="1.2"/>
+  <rect x="54" y="376" width="3.5" height="68" rx="2" fill="#a98bff"/>
+  <text x="74" y="399" fill="#c3abff" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Dead letter</text>
+  <text x="74" y="417" fill="#68728a" font-family="ui-monospace, monospace" font-size="9.5">pipeline could not process</text>
+  <text x="74" y="430" fill="#c3abff" font-family="ui-monospace, monospace" font-size="9.5">→ its own table · alert on this</text>
+
+  <path d="M268 410 C 330 410, 350 420, 400 440" fill="none" stroke="#68728a" stroke-width="1.3" stroke-dasharray="4 4" marker-end="url(#nt-arrow-dim)"/>
+  <path d="M268 266 C 320 266, 330 340, 466 352" fill="none" stroke="#f0b35b" stroke-width="1.3" stroke-dasharray="4 4" marker-end="url(#nt-arrow-amber)" opacity="0.8"/>
+
+  <!-- ============ measured results ============ -->
+  <rect x="54" y="494" width="892" height="64" rx="13" fill="#0d1017" stroke="#1e2431"/>
+
+  <text x="86" y="518" fill="#4e566b" font-family="ui-monospace, monospace" font-size="9.5" letter-spacing="1.8">TESTS</text>
+  <text x="86" y="542" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="16" font-weight="700">255 passing</text>
+
+  <line x1="276" y1="510" x2="276" y2="544" stroke="#1e2431"/>
+  <text x="308" y="518" fill="#4e566b" font-family="ui-monospace, monospace" font-size="9.5" letter-spacing="1.8">LINE COVERAGE</text>
+  <text x="308" y="542" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="16" font-weight="700">81.1%</text>
+
+  <line x1="498" y1="510" x2="498" y2="544" stroke="#1e2431"/>
+  <text x="530" y="518" fill="#4e566b" font-family="ui-monospace, monospace" font-size="9.5" letter-spacing="1.8">IDEMPOTENCY PROVED BY</text>
+  <text x="530" y="542" fill="#c6cedf" font-family="system-ui, sans-serif" font-size="14" font-weight="600">12 simultaneous requests</text>
+
+  <line x1="760" y1="510" x2="760" y2="544" stroke="#1e2431"/>
+  <text x="792" y="518" fill="#4e566b" font-family="ui-monospace, monospace" font-size="9.5" letter-spacing="1.8">BUGS FOUND BY TESTS</text>
+  <text x="792" y="542" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="16" font-weight="700">3</text>
+
+  <text x="500" y="590" text-anchor="middle" fill="#4e566b" font-family="ui-monospace, monospace" font-size="10">Provider adapters are local simulators. Every API response carries "simulated": true.</text>
+</svg>
