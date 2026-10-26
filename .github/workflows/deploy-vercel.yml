@@ -1,0 +1,223 @@
+name: Deploy to Vercel
+
+# ─────────────────────────────────────────────────────────────────────────────
+# What this does
+#
+#   push to main            → validate, build, deploy to PRODUCTION
+#   pull request into main  → validate and build only. No deployment.
+#   manual dispatch         → validate, build, deploy to PRODUCTION
+#
+# Why the build happens here rather than on Vercel
+#
+#   The job runs `vercel build` and then `vercel deploy --prebuilt`, so the
+#   artefact that gets deployed is byte-for-byte the one the checks passed
+#   against. Letting Vercel rebuild from source would mean validating one build
+#   and shipping a different one — usually identical, occasionally not, and the
+#   occasional case is exactly the one worth catching.
+#
+# Duplicate deployments
+#
+#   As written, this is the ONLY production pipeline: the native Vercel Git
+#   integration is not connected to this repository (verified via the Vercel
+#   API — the project's `link` field is empty).
+#
+#   If the Vercel GitHub App is later granted access to this repo, Vercel will
+#   ALSO deploy on every push to main and there will be two production
+#   deployments racing for the same commit. Pick one:
+#
+#     • Keep this workflow  → in the Vercel dashboard, set
+#       Settings → Git → Ignored Build Step to `exit 0`, which tells Vercel's
+#       own pipeline to skip, leaving this workflow in charge.
+#     • Keep native Git     → delete this file, or narrow its trigger to
+#       `workflow_dispatch` only so it never fires on push.
+#
+#   Changing a dashboard setting is an account-level action and is left to the
+#   repository owner.
+#
+# Required repository secrets — Settings → Secrets and variables → Actions
+#
+#   VERCEL_TOKEN       A Vercel access token. This is a real credential.
+#                      Create at https://vercel.com/account/tokens
+#   VERCEL_ORG_ID      Vercel account/team id. An identifier, not a credential.
+#   VERCEL_PROJECT_ID  Vercel project id. An identifier, not a credential.
+#
+#   The two ids are the `orgId` and `projectId` already in the local, git-
+#   ignored `.vercel/project.json`. They are stored as secrets because that is
+#   the documented convention, not because they are sensitive.
+#
+#   The workflow fails fast with a clear message if any are missing, rather
+#   than attempting a deploy that cannot succeed.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Read-only by default. Nothing here needs to write to the repository.
+permissions:
+  contents: read
+
+# One production deployment at a time. A second push while the first is still
+# deploying cancels the first, so the newest commit wins instead of two runs
+# racing to alias the same domain. Pull-request runs are grouped per branch and
+# are also cancellable, since a superseded PR build is wasted work.
+concurrency:
+  group: vercel-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Node 22 is what the local test suite is run against. The Vercel project's
+  # own runtime is 24.x; both satisfy the `>=20.9.0` in package.json, and this
+  # site ships no server code for the difference to matter to.
+  NODE_VERSION: "22"
+
+jobs:
+  validate:
+    name: Lint · typecheck · test · build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      # `npm ci` rather than `npm install`: it installs exactly what the
+      # lockfile pins and fails if package.json and the lockfile disagree,
+      # which is the behaviour you want in CI and not the one you want locally.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit and component tests
+        run: npm test
+
+      # Plain `next build`, independent of Vercel. If this fails the deploy job
+      # never starts, because it `needs:` this one.
+      - name: Production build
+        run: npm run build
+
+  deploy:
+    name: Deploy to production
+    # Only after validation passes, and never from a pull request — a PR can
+    # come from a fork, and a fork must not be able to deploy to production.
+    needs: validate
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      # Checked before anything is attempted, so a missing secret produces an
+      # actionable message instead of a confusing CLI error. Only presence is
+      # tested — no value is ever echoed.
+      - name: Verify required secrets are present
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          missing=""
+          [ -z "$VERCEL_TOKEN" ]      && missing="$missing VERCEL_TOKEN"
+          [ -z "$VERCEL_ORG_ID" ]     && missing="$missing VERCEL_ORG_ID"
+          [ -z "$VERCEL_PROJECT_ID" ] && missing="$missing VERCEL_PROJECT_ID"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing"
+            echo "::error::Set them under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          echo "All required secrets are present."
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Pinned rather than @latest: a deployment pipeline should not change
+      # behaviour because an upstream release happened overnight.
+      - name: Install the Vercel CLI
+        run: npm install --no-save vercel@65.2.0
+
+      # Pulls the project's own settings (framework preset, build command,
+      # output directory) so the build below matches what Vercel would do.
+      - name: Link the Vercel project and pull production settings
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: npx vercel pull --yes --environment=production --token="${{ secrets.VERCEL_TOKEN }}"
+
+      - name: Build for production
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: npx vercel build --prod --token="${{ secrets.VERCEL_TOKEN }}"
+
+      # `--prebuilt` uploads the artefact produced above instead of the source,
+      # so Vercel deploys exactly what was just built and validated.
+      - name: Deploy the prebuilt output
+        id: deploy
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          set -o pipefail
+          url="$(npx vercel deploy --prebuilt --prod \
+            --token="${{ secrets.VERCEL_TOKEN }}" | tail -n 1)"
+          case "$url" in
+            https://*) ;;
+            *)
+              echo "::error::Deploy did not return a URL. Got: $url"
+              exit 1
+              ;;
+          esac
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployed: $url"
+
+      # A deployment that returns a URL can still be serving an error page.
+      - name: Verify the deployment answers
+        run: |
+          url="${{ steps.deploy.outputs.url }}"
+          echo "Checking $url"
+          code="$(curl -sS -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 4 \
+            --retry-all-errors --max-time 30 "$url")"
+          echo "HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::Expected HTTP 200 from the deployment, got $code"
+            exit 1
+          fi
+
+      - name: Summarise
+        run: |
+          {
+            echo "### Production deployment"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Commit | \`${{ github.sha }}\` |"
+            echo "| Branch | \`${{ github.ref_name }}\` |"
+            echo "| Deployment | ${{ steps.deploy.outputs.url }} |"
+            echo "| Live site | https://bhavesh-bokde-portfolio.vercel.app |"
+          } >> "$GITHUB_STEP_SUMMARY"

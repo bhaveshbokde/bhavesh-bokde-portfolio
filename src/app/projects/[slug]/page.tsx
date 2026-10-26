@@ -13,6 +13,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { KindBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { ConfidentialityNotice } from "@/components/ui/ConfidentialityNotice";
 import { ArchitectureExplorer } from "@/components/visuals/ArchitectureExplorer";
+import { CaseStudyHero } from "@/components/sections/CaseStudyHero";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -131,7 +132,14 @@ export default async function ProjectPage({ params }: PageProps) {
           </ol>
         </nav>
 
-        {/* ---------------- header ---------------- */}
+        {/* ---------------- header ----------------
+            A professional case study with an interactive architecture gets the
+            dedicated hero: the TSP positioning and the confidentiality scope
+            both need to land before the reader scrolls, not after. Everything
+            else keeps the standard header. */}
+        {project.interactiveArchitecture ? (
+          <CaseStudyHero project={project} />
+        ) : (
         <header className="max-w-3xl">
           <div className="flex flex-wrap items-center gap-2.5">
             <KindBadge kind={project.kind} />
@@ -183,9 +191,12 @@ export default async function ProjectPage({ params }: PageProps) {
             )}
           </div>
         </header>
+        )}
 
-        {/* ---------------- confidentiality ---------------- */}
-        {project.confidentialityNote && (
+        {/* ---------------- confidentiality ----------------
+            The case-study hero carries its own scope notice, so this would be
+            the same point made twice on that page. */}
+        {project.confidentialityNote && !project.interactiveArchitecture && (
           <div className="mt-10 max-w-3xl">
             <ConfidentialityNotice note={project.confidentialityNote} />
           </div>
@@ -193,7 +204,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
         {/* ---------------- architecture ---------------- */}
         {project.interactiveArchitecture ? (
-          <section aria-labelledby="arch-heading" className="mt-12">
+          <section id="architecture" aria-labelledby="arch-heading" className="mt-16 scroll-mt-24">
             <h2
               id="arch-heading"
               className="flex items-center gap-2.5 font-display text-xl font-semibold text-mist-50"
