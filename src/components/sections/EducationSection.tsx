@@ -31,7 +31,7 @@ export function EducationSection() {
                       <h3 className="font-display text-base font-semibold text-mist-50">
                         {entry.degree}
                       </h3>
-                      <span className="font-mono text-[11px] tracking-wide text-mist-500">
+                      <span className="font-mono text-label tracking-wide text-mist-500">
                         {entry.startYear} – {entry.endYear}
                       </span>
                     </div>
@@ -49,7 +49,7 @@ export function EducationSection() {
                     )}
 
                     {entry.location && (
-                      <p className="mt-2.5 inline-flex items-center gap-1.5 font-mono text-[11px] text-mist-600">
+                      <p className="mt-2.5 inline-flex items-center gap-1.5 font-mono text-label text-mist-600">
                         <Icon name="MapPin" size={11} />
                         {entry.location}
                       </p>

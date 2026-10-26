@@ -96,14 +96,14 @@ export function ExperienceSection() {
                     <p className="font-mono text-xs tracking-wide text-mist-300">
                       {formatDateRange(role.startDate, role.endDate)}
                     </p>
-                    <p className="mt-1 font-mono text-[11px] text-mist-500">
+                    <p className="mt-1 font-mono text-label text-mist-500">
                       {formatDuration(role.startDate, role.endDate)}
                     </p>
                   </div>
                 </div>
 
                 {role.summary && (
-                  <p className="mt-5 border-l-2 border-azure-500/30 pl-4 text-[15px] leading-relaxed text-mist-300">
+                  <p className="mt-5 border-l-2 border-azure-500/30 pl-4 text-body leading-relaxed text-mist-300">
                     {role.summary}
                   </p>
                 )}
@@ -116,11 +116,11 @@ export function ExperienceSection() {
                         aria-hidden="true"
                         className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-azure-400/70"
                       />
-                      <p className="text-[15px] leading-relaxed text-mist-400">
+                      <p className="text-body leading-relaxed text-mist-400">
                         {highlight.text}
                         {highlight.resumeReported && (
                           <span
-                            className="ml-2 inline-flex items-center gap-1 rounded border border-ink-600 bg-ink-850 px-1.5 py-0.5 align-middle font-mono text-[10px] text-mist-500"
+                            className="ml-2 inline-flex items-center gap-1 rounded border border-ink-600 bg-ink-850 px-1.5 py-0.5 align-middle font-mono text-micro text-mist-500"
                             title="This figure is reported in my resume. It is not a measurement independently re-run for this website."
                           >
                             <Icon name="Info" size={10} />

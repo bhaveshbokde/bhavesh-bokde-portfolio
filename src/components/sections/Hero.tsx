@@ -50,7 +50,7 @@ export function Hero() {
             {/* Availability-neutral status pill: states a fact (current role
                 and location) rather than claiming to be "available for hire",
                 which is not mine to assert. */}
-            <p className="inline-flex items-center gap-2.5 rounded-full border border-ink-600/80 bg-ink-850/60 px-3.5 py-1.5 font-mono text-[11px] tracking-wide text-mist-400 backdrop-blur-sm">
+            <p className="inline-flex items-center gap-2.5 rounded-full border border-ink-600/80 bg-ink-850/60 px-3.5 py-1.5 font-mono text-label tracking-wide text-mist-400 backdrop-blur-sm">
               <span className="relative flex h-1.5 w-1.5">
                 <span
                   data-motion="decorative"
@@ -77,7 +77,7 @@ export function Hero() {
               {profile.tagline}
             </p>
 
-            <p className="mt-7 max-w-xl text-base leading-relaxed text-mist-400 md:text-[17px]">
+            <p className="mt-7 max-w-xl text-base leading-relaxed text-mist-400 md:text-lead">
               {summary}
             </p>
 
@@ -158,7 +158,7 @@ export function Hero() {
         aria-hidden="true"
         className="absolute inset-x-0 bottom-8 hidden justify-center md:flex"
       >
-        <span className="flex flex-col items-center gap-2 font-mono text-[10px] tracking-[0.25em] text-mist-600 uppercase">
+        <span className="flex flex-col items-center gap-2 font-mono text-micro tracking-[0.25em] text-mist-600 uppercase">
           Scroll
           <span className="h-10 w-px bg-gradient-to-b from-ink-500 to-transparent" />
         </span>

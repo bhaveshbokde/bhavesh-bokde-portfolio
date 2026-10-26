@@ -72,7 +72,7 @@ export function SkillsExplorer({ groups }: { groups: SkillsExplorerGroup[] }) {
               {chip.label}
               <span
                 className={cn(
-                  "font-mono text-[10px]",
+                  "font-mono text-micro",
                   selected ? "text-azure-400" : "text-mist-600",
                 )}
               >
@@ -148,7 +148,7 @@ export function SkillsExplorer({ groups }: { groups: SkillsExplorerGroup[] }) {
                     )}
                     {skill.name}
                     {skill.proficiency && (
-                      <span className="text-[10px] text-mist-600">
+                      <span className="text-micro text-mist-600">
                         {skill.proficiency}
                       </span>
                     )}
@@ -171,7 +171,7 @@ export function SkillsExplorer({ groups }: { groups: SkillsExplorerGroup[] }) {
       </div>
 
       {/* Legend for the production marker. */}
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-mist-600">
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-label text-mist-600">
         <p className="flex items-center gap-2">
           <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-azure-400" />
           used in production at work

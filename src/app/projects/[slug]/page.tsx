@@ -73,7 +73,7 @@ function Block({
       {paragraphs && paragraphs.length > 0 && (
         <div className="mt-4 space-y-4">
           {paragraphs.map((paragraph, index) => (
-            <p key={index} className="text-[15px] leading-[1.75] text-mist-300">
+            <p key={index} className="text-body leading-[1.75] text-mist-300">
               {paragraph}
             </p>
           ))}
@@ -88,7 +88,7 @@ function Block({
                 aria-hidden="true"
                 className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-azure-400/70"
               />
-              <span className="text-[15px] leading-[1.75] text-mist-300">{bullet}</span>
+              <span className="text-body leading-[1.75] text-mist-300">{bullet}</span>
             </li>
           ))}
         </ul>
@@ -113,7 +113,7 @@ export default async function ProjectPage({ params }: PageProps) {
       <div className="container-page">
         {/* ---------------- breadcrumb ---------------- */}
         <nav aria-label="Breadcrumb" className="mb-10">
-          <ol className="flex items-center gap-2 font-mono text-[11px] tracking-wide text-mist-500">
+          <ol className="flex items-center gap-2 font-mono text-label tracking-wide text-mist-500">
             <li>
               <Link href="/" className="transition-colors hover:text-mist-200">
                 Home
@@ -150,7 +150,7 @@ export default async function ProjectPage({ params }: PageProps) {
             <span className="text-gradient">{project.name}</span>
           </h1>
 
-          <p className="mt-3 font-mono text-xs tracking-[0.16em] text-mist-500 uppercase">
+          <p className="mt-3 font-mono text-xs tracking-label text-mist-500 uppercase">
             {project.category}
           </p>
 
@@ -212,7 +212,7 @@ export default async function ProjectPage({ params }: PageProps) {
               <Icon name="Network" size={17} className="text-azure-400" />
               Explore the architecture
             </h2>
-            <p className="mt-3 mb-6 max-w-2xl text-[15px] leading-relaxed text-mist-400">
+            <p className="mt-3 mb-6 max-w-2xl text-body leading-relaxed text-mist-400">
               Select a component to read what it does, or play the walkthrough to
               follow a request from consent through to delivered records —
               including what happens when a provider fails.
@@ -223,7 +223,7 @@ export default async function ProjectPage({ params }: PageProps) {
           project.preview && (
           <Reveal>
             <figure className="surface-card mt-12 overflow-hidden">
-              <figcaption className="border-b border-ink-700/70 px-5 py-3 font-mono text-[11px] tracking-[0.16em] text-mist-500 uppercase">
+              <figcaption className="border-b border-ink-700/70 px-5 py-3 eyebrow text-mist-500">
                 {project.kind === "professional"
                   ? "High-level architecture · generic components, synthetic values"
                   : "Architecture"}
@@ -249,14 +249,14 @@ export default async function ProjectPage({ params }: PageProps) {
             <dl className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {project.metrics.map((metric) => (
                 <div key={metric.label} className="surface-card p-5">
-                  <dt className="font-mono text-[10px] tracking-[0.18em] text-mist-600 uppercase">
+                  <dt className="eyebrow-sm text-mist-600">
                     {metric.label}
                   </dt>
                   <dd className="mt-2 font-display text-xl font-semibold text-mist-50">
                     {metric.value}
                   </dd>
                   {metric.source && (
-                    <p className="mt-1.5 text-[11px] leading-snug text-mist-600">
+                    <p className="mt-1.5 text-label leading-snug text-mist-600">
                       {metric.source}
                     </p>
                   )}
@@ -293,7 +293,7 @@ export default async function ProjectPage({ params }: PageProps) {
           {/* ---------------- sidebar ---------------- */}
           <aside className="lg:sticky lg:top-28 lg:self-start">
             <div className="surface-card p-5">
-              <h2 className="font-mono text-[11px] tracking-[0.2em] text-mist-500 uppercase">
+              <h2 className="eyebrow text-mist-500">
                 Stack
               </h2>
               <ul className="mt-4 flex flex-wrap gap-2">
@@ -307,7 +307,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
             {project.caseStudy && project.caseStudy.length > 0 && (
               <nav aria-label="On this page" className="surface-card mt-4 p-5">
-                <h2 className="font-mono text-[11px] tracking-[0.2em] text-mist-500 uppercase">
+                <h2 className="eyebrow text-mist-500">
                   On this page
                 </h2>
                 <ul className="mt-4 space-y-2.5">

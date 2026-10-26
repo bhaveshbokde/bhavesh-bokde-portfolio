@@ -232,7 +232,7 @@ export function ArchitectureCanvas({
 
       {/* ═══════════════ mobile: vertical, grouped by zone ═══════════════ */}
       <div className="md:hidden">
-        <p className="border-b border-ink-700/70 px-4 py-2.5 font-mono text-[10px] tracking-[0.16em] text-mist-500 uppercase">
+        <p className="border-b border-ink-700/70 px-4 py-2.5 eyebrow-sm text-mist-500">
           Components by owner
         </p>
         <ul className="divide-y divide-ink-700/50">
@@ -241,12 +241,12 @@ export function ArchitectureCanvas({
             return (
               <li key={zone.id} className="px-4 py-3">
                 <p
-                  className="font-mono text-[10px] tracking-[0.14em] uppercase"
+                  className="font-mono text-micro tracking-[0.14em] uppercase"
                   style={{ color: zone.accent }}
                 >
                   {zone.label}
                 </p>
-                <p className="mt-1 text-[11px] leading-snug text-mist-600">{zone.note}</p>
+                <p className="mt-1 text-label leading-snug text-mist-600">{zone.note}</p>
 
                 <ul className="mt-3 space-y-2">
                   {zoneNodes.map((node) => {
@@ -283,7 +283,7 @@ export function ArchitectureCanvas({
                             <span className="block text-sm font-medium text-mist-100">
                               {node.label}
                             </span>
-                            <span className="mt-0.5 block font-mono text-[10px] text-mist-500">
+                            <span className="mt-0.5 block font-mono text-micro text-mist-500">
                               {node.caption}
                             </span>
                           </span>

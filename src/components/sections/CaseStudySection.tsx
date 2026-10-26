@@ -42,7 +42,7 @@ export function CaseStudySection() {
           <div className="flex flex-wrap items-center gap-2.5">
             <KindBadge kind={project.kind} />
             <StatusBadge status={project.status} />
-            <span className="font-mono text-[11px] tracking-wide text-mist-500">
+            <span className="font-mono text-label tracking-wide text-mist-500">
               {project.category}
             </span>
           </div>
@@ -60,10 +60,10 @@ export function CaseStudySection() {
             <div className="space-y-7">
               {project.problem && (
                 <div>
-                  <h3 className="font-mono text-[11px] tracking-[0.2em] text-azure-400 uppercase">
+                  <h3 className="eyebrow text-azure-400">
                     The problem
                   </h3>
-                  <p className="mt-3 text-[15px] leading-[1.75] text-mist-300">
+                  <p className="mt-3 text-body leading-[1.75] text-mist-300">
                     {project.problem}
                   </p>
                 </div>
@@ -71,10 +71,10 @@ export function CaseStudySection() {
 
               {context?.body?.[1] && (
                 <div>
-                  <h3 className="font-mono text-[11px] tracking-[0.2em] text-azure-400 uppercase">
+                  <h3 className="eyebrow text-azure-400">
                     Why a gateway
                   </h3>
-                  <p className="mt-3 text-[15px] leading-[1.75] text-mist-300">
+                  <p className="mt-3 text-body leading-[1.75] text-mist-300">
                     {context.body[1]}
                   </p>
                 </div>
@@ -82,7 +82,7 @@ export function CaseStudySection() {
 
               {role && role.bullets && role.bullets.length > 0 && (
                 <div>
-                  <h3 className="font-mono text-[11px] tracking-[0.2em] text-azure-400 uppercase">
+                  <h3 className="eyebrow text-azure-400">
                     My contributions
                   </h3>
                   <ul className="mt-3 space-y-2.5">
@@ -100,7 +100,7 @@ export function CaseStudySection() {
                     ))}
                   </ul>
                   {role.bullets.length > 4 && (
-                    <p className="mt-3 pl-7 font-mono text-[11px] text-mist-600">
+                    <p className="mt-3 pl-7 font-mono text-label text-mist-600">
                       + {role.bullets.length - 4} more in the full case study
                     </p>
                   )}
@@ -134,11 +134,11 @@ export function CaseStudySection() {
             ) : (
             <figure className="surface-card overflow-hidden">
               <figcaption className="flex items-center justify-between gap-3 border-b border-ink-700/70 px-5 py-3">
-                <span className="font-mono text-[11px] tracking-[0.16em] text-mist-500 uppercase">
+                <span className="eyebrow text-mist-500">
                   High-level architecture
                 </span>
                 <span
-                  className="inline-flex items-center gap-1.5 rounded border border-ink-600 bg-ink-850 px-2 py-1 font-mono text-[10px] text-mist-500"
+                  className="inline-flex items-center gap-1.5 rounded border border-ink-600 bg-ink-850 px-2 py-1 font-mono text-micro text-mist-500"
                   title="Generic component roles and synthetic values. No internal topology, service names or endpoints."
                 >
                   <Icon name="Info" size={10} />

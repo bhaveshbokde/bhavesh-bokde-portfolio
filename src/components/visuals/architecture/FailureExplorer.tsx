@@ -73,7 +73,7 @@ export function FailureExplorer({
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "grid h-7 w-7 shrink-0 place-items-center rounded-lg border font-mono text-[10px]",
+                      "grid h-7 w-7 shrink-0 place-items-center rounded-lg border font-mono text-micro",
                       open
                         ? "border-amber-glow/40 bg-amber-glow/10 text-amber-glow"
                         : "border-ink-600 bg-ink-900 text-mist-500",
@@ -86,7 +86,7 @@ export function FailureExplorer({
                     <span className="block text-sm font-medium text-mist-100">
                       {failure.title}
                     </span>
-                    <span className="mt-0.5 block font-mono text-[10px] text-mist-600">
+                    <span className="mt-0.5 block font-mono text-micro text-mist-600">
                       stage {failure.stage} · {failure.stageTitle}
                     </span>
                   </span>
@@ -106,26 +106,26 @@ export function FailureExplorer({
                 {open && (
                   <dl id={panelId} className="space-y-3 border-t border-ink-700/60 px-4 py-4">
                     <div>
-                      <dt className="font-mono text-[10px] tracking-[0.16em] text-mist-600 uppercase">
+                      <dt className="eyebrow-sm text-mist-600">
                         Signal
                       </dt>
-                      <dd className="mt-1 text-[13px] leading-relaxed text-mist-300">
+                      <dd className="mt-1 text-caption leading-relaxed text-mist-300">
                         {failure.signal}
                       </dd>
                     </div>
                     <div>
-                      <dt className="font-mono text-[10px] tracking-[0.16em] text-mist-600 uppercase">
+                      <dt className="eyebrow-sm text-mist-600">
                         Consequence
                       </dt>
-                      <dd className="mt-1 text-[13px] leading-relaxed text-mist-300">
+                      <dd className="mt-1 text-caption leading-relaxed text-mist-300">
                         {failure.consequence}
                       </dd>
                     </div>
                     <div>
-                      <dt className="font-mono text-[10px] tracking-[0.16em] text-mist-600 uppercase">
+                      <dt className="eyebrow-sm text-mist-600">
                         Handling
                       </dt>
-                      <dd className="mt-1 text-[13px] leading-relaxed text-mist-300">
+                      <dd className="mt-1 text-caption leading-relaxed text-mist-300">
                         {failure.handling}
                       </dd>
                     </div>

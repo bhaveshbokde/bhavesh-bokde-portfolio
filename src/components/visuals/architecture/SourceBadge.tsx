@@ -44,7 +44,7 @@ export function SourceBadge({
       title={SOURCE_NOTE[source]}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border font-mono tracking-wide whitespace-nowrap",
-        size === "sm" ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-[11px]",
+        size === "sm" ? "px-2 py-0.5 text-micro" : "px-2.5 py-1 text-label",
         style.className,
         className,
       )}

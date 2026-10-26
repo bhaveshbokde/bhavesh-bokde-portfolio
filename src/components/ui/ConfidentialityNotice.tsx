@@ -23,7 +23,7 @@ export function ConfidentialityNotice({ note }: { note: string }) {
           <Icon name="Lock" size={15} className="text-iris-300" />
         </span>
         <div>
-          <h3 className="font-mono text-[11px] tracking-[0.2em] text-iris-300 uppercase">
+          <h3 className="eyebrow text-iris-300">
             Professional work · what is shown
           </h3>
           <p className="mt-2.5 text-sm leading-relaxed text-mist-400">{note}</p>

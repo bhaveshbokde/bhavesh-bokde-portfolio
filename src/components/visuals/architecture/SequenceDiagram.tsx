@@ -237,7 +237,7 @@ function MobileMessage({
           style={{ background: style.stroke }}
         />
         <span className="min-w-0 flex-1">
-          <span className="flex items-center gap-2 font-mono text-[10px] text-mist-600">
+          <span className="flex items-center gap-2 font-mono text-micro text-mist-600">
             <span>stage {String(message.stage).padStart(2, "0")}</span>
             <span aria-hidden="true">·</span>
             <span>

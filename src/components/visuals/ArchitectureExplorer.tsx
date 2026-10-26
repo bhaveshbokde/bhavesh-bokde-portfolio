@@ -229,7 +229,7 @@ export function ArchitectureExplorer() {
                 aria-label={`Stage ${item.number}: ${item.title}`}
                 title={`${item.number}. ${item.title}`}
                 className={cn(
-                  "h-7 w-7 rounded-md border font-mono text-[11px] transition-colors",
+                  "h-7 w-7 rounded-md border font-mono text-label transition-colors",
                   index === stageIndex
                     ? "border-azure-500/60 bg-azure-500/15 text-azure-300"
                     : "border-ink-600/80 bg-ink-850/50 text-mist-500 hover:border-ink-500 hover:text-mist-300",
@@ -266,7 +266,7 @@ export function ArchitectureExplorer() {
       {stage && view !== "failures" && (
         <div className="rounded-xl border border-azure-500/30 bg-azure-500/[0.055] p-4 md:p-5">
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="font-mono text-[10px] tracking-[0.18em] text-azure-300 uppercase">
+            <span className="eyebrow-sm text-azure-300">
               Stage {stage.number} of {LIFECYCLE.length}
             </span>
             <SourceBadge source={stage.source} size="sm" />
@@ -276,7 +276,7 @@ export function ArchitectureExplorer() {
             {stage.title}
           </h4>
 
-          <div className="mt-3 flex flex-wrap items-center gap-2 font-mono text-[11px]">
+          <div className="mt-3 flex flex-wrap items-center gap-2 font-mono text-label">
             <span className="rounded border border-ink-600 bg-ink-900/70 px-2 py-1 text-mist-300">
               {stage.actor}
             </span>
@@ -301,7 +301,7 @@ export function ArchitectureExplorer() {
             <ul className="mt-3 flex flex-wrap gap-1.5">
               {stage.operations.map((op) => (
                 <li key={op}>
-                  <code className="rounded border border-ink-600 bg-ink-950/60 px-2 py-1 font-mono text-[11px] text-azure-300">
+                  <code className="rounded border border-ink-600 bg-ink-950/60 px-2 py-1 font-mono text-label text-azure-300">
                     {op}
                   </code>
                 </li>
@@ -331,7 +331,7 @@ export function ArchitectureExplorer() {
       <div className="min-w-0 space-y-4">
         <div className="surface-card min-w-0 overflow-hidden">
           <div className="flex items-center justify-between gap-3 border-b border-ink-700/70 px-4 py-2.5">
-            <span className="font-mono text-[10px] tracking-[0.18em] text-mist-500 uppercase">
+            <span className="eyebrow-sm text-mist-500">
               {view === "architecture"
                 ? "Illustrative architecture"
                 : view === "sequence"
@@ -339,7 +339,7 @@ export function ArchitectureExplorer() {
                   : "Failure paths"}
             </span>
             <span
-              className="inline-flex items-center gap-1.5 rounded border border-ink-600 bg-ink-850 px-2 py-1 font-mono text-[10px] text-mist-500"
+              className="inline-flex items-center gap-1.5 rounded border border-ink-600 bg-ink-850 px-2 py-1 font-mono text-micro text-mist-500"
               title="A high-level illustrative representation of engineering responsibilities, built from the public ReBIT specifications. Not a reproduction of any production architecture."
             >
               <Icon name="Info" size={10} />
@@ -385,7 +385,7 @@ export function ArchitectureExplorer() {
                     <li
                       key={entry.kind}
                       title={entry.note}
-                      className="inline-flex items-center gap-2 font-mono text-[10px] text-mist-500"
+                      className="inline-flex items-center gap-2 font-mono text-micro text-mist-500"
                     >
                       <svg width="22" height="8" aria-hidden="true">
                         <line
@@ -415,7 +415,7 @@ export function ArchitectureExplorer() {
             <>
               <div className="surface-card p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="font-mono text-[10px] tracking-[0.18em] text-mist-500 uppercase">
+                  <p className="eyebrow-sm text-mist-500">
                     Component
                   </p>
                   <SourceBadge source={selected.source} size="sm" />
@@ -430,7 +430,7 @@ export function ArchitectureExplorer() {
                   {selected.label}
                 </h4>
 
-                <p className="mt-1 font-mono text-[10px] tracking-wide text-mist-600">
+                <p className="mt-1 font-mono text-micro tracking-wide text-mist-600">
                   {ZONES.find((z) => z.id === selected.zone)?.label}
                 </p>
 
@@ -445,7 +445,7 @@ export function ArchitectureExplorer() {
                   {selected.detail.map((paragraph, index) => (
                     <p
                       key={index}
-                      className="text-[13px] leading-relaxed text-mist-400"
+                      className="text-caption leading-relaxed text-mist-400"
                       // Bold markers in the copy are authored, not user input.
                       dangerouslySetInnerHTML={{
                         __html: paragraph.replace(
@@ -461,14 +461,14 @@ export function ArchitectureExplorer() {
                   <ul className="mt-4 space-y-1.5 border-t border-ink-700/60 pt-4">
                     {selected.operations.map((op) => (
                       <li key={op}>
-                        <code className="font-mono text-[11px] text-azure-300">{op}</code>
+                        <code className="font-mono text-label text-azure-300">{op}</code>
                       </li>
                     ))}
                   </ul>
                 )}
 
                 <div className="mt-4 border-t border-ink-700/60 pt-4">
-                  <p className="font-mono text-[10px] tracking-[0.16em] text-mist-600 uppercase">
+                  <p className="eyebrow-sm text-mist-600">
                     Failure conditions
                   </p>
                   <ul className="mt-2 space-y-2">
@@ -504,7 +504,7 @@ export function ArchitectureExplorer() {
 
       {/* ═══════════════ provenance ═══════════════ */}
       <div className="surface-inset p-4">
-        <p className="font-mono text-[10px] tracking-[0.16em] text-mist-600 uppercase">
+        <p className="eyebrow-sm text-mist-600">
           Protocol sources
         </p>
         <ul className="mt-2.5 space-y-1.5">
@@ -530,10 +530,10 @@ export function ArchitectureExplorer() {
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="font-mono text-[10px] tracking-[0.16em] text-mist-600 uppercase">
+      <dt className="eyebrow-sm text-mist-600">
         {label}
       </dt>
-      <dd className="mt-1 text-[13px] leading-relaxed text-mist-300">{value}</dd>
+      <dd className="mt-1 text-caption leading-relaxed text-mist-300">{value}</dd>
     </div>
   );
 }
@@ -542,7 +542,7 @@ function Field({ label, value }: { label: string; value: string }) {
 function ZoneKey() {
   return (
     <div className="surface-card p-5">
-      <p className="font-mono text-[10px] tracking-[0.18em] text-mist-500 uppercase">
+      <p className="eyebrow-sm text-mist-500">
         Ownership
       </p>
       <ul className="mt-3 space-y-3">
@@ -555,7 +555,7 @@ function ZoneKey() {
             />
             <span>
               <span className="block text-xs font-medium text-mist-200">{zone.label}</span>
-              <span className="mt-0.5 block text-[11px] leading-relaxed text-mist-500">
+              <span className="mt-0.5 block text-label leading-relaxed text-mist-500">
                 {zone.note}
               </span>
             </span>

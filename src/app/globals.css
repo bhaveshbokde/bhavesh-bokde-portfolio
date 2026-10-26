@@ -63,9 +63,45 @@
   --text-display: clamp(2rem, 1.3rem + 3.1vw, 3.5rem);
   --text-display-lg: clamp(2.5rem, 1.35rem + 4.3vw, 4.75rem);
 
+  /* The small end of the scale, named.
+     These five sizes were already in use — as `text-[10px]`, `text-[11px]`,
+     `text-[13px]`, `text-[15px]` and `text-[17px]`, scattered across ~90
+     occurrences. Naming them is the difference between a scale and a habit:
+     a token can be adjusted once, an arbitrary value has to be hunted. */
+  --text-micro: 0.625rem; /* 10px — counters, legend keys */
+  --text-label: 0.6875rem; /* 11px — eyebrows, metadata, chips */
+  --text-caption: 0.8125rem; /* 13px — dense explanatory copy */
+  --text-body: 0.9375rem; /* 15px — default long-form body */
+  --text-lead: 1.0625rem; /* 17px — hero and section intros */
+
+  /* Letter-spacing for the uppercase mono labels. Three values were in use
+     (0.16 / 0.18 / 0.2em) with no rule governing which went where; now the
+     rule is the name. */
+  --tracking-label: 0.16em;
+  --tracking-eyebrow: 0.18em;
+  --tracking-display: 0.22em;
+
+  /* --- radii ---------------------------------------------------------- */
+  --radius-control: 0.5rem; /* buttons, inputs, small chips */
+  --radius-card: 1rem; /* surface cards */
+  --radius-panel: 1.25rem; /* large panels and overlays */
+
+  /* --- elevation ------------------------------------------------------ */
+  --shadow-card: inset 0 1px 0 0 color-mix(in oklab, #f2f5fb 6%, transparent),
+    0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --shadow-lift: 0 24px 60px -28px rgb(0 0 0 / 0.9);
+  --shadow-overlay: 0 32px 90px -24px rgb(0 0 0 / 0.9);
+
   /* --- motion -------------------------------------------------------- */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-soft: cubic-bezier(0.45, 0, 0.15, 1);
+
+  /* Three durations, which is enough. `fast` is for state that should feel
+     instant (hover, focus), `base` for anything the eye should follow, and
+     `slow` for a reveal that wants to be noticed once. */
+  --duration-fast: 200ms;
+  --duration-base: 320ms;
+  --duration-slow: 560ms;
 
   --animate-drift: drift 26s ease-in-out infinite;
   --animate-drift-slow: drift 40s ease-in-out infinite reverse;
@@ -211,6 +247,34 @@
   }
 }
 
+/* The uppercase mono label that appears above almost every block on the
+   site — section eyebrows, panel headings, metadata keys, legend titles.
+
+   It was previously written out as some combination of `font-mono
+   text-[10px] tracking-[0.16em] text-mist-600 uppercase` in roughly ninety
+   places, with the size drifting between 10px and 11px and the tracking
+   between 0.16em and 0.2em depending on which component you landed in.
+   Those near-misses are what makes a site feel assembled rather than
+   designed, so the pattern now has one definition.
+
+   Colour is deliberately left out: these labels sit on accent panels as
+   often as on neutral ones, so the caller sets it. */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+/* The smaller sibling, for metadata keys inside cards and definition
+   lists where a full eyebrow would shout. */
+@utility eyebrow-sm {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
 /* A hairline that fades out at both ends. Used as a section divider —
    a solid 1px rule reads as a table border, this reads as light. */
 @utility rule-fade {
@@ -228,7 +292,7 @@
    along the top edge so the card reads as lit from above. */
 @utility surface-card {
   position: relative;
-  border-radius: 1rem;
+  border-radius: var(--radius-card);
   border: 1px solid color-mix(in oklab, var(--color-ink-600) 75%, transparent);
   background:
     linear-gradient(
@@ -236,13 +300,11 @@
       color-mix(in oklab, var(--color-ink-800) 92%, transparent),
       color-mix(in oklab, var(--color-ink-900) 96%, transparent)
     );
-  box-shadow:
-    inset 0 1px 0 0 color-mix(in oklab, var(--color-mist-50) 6%, transparent),
-    0 1px 2px 0 rgb(0 0 0 / 0.4);
+  box-shadow: var(--shadow-card);
 }
 
 @utility surface-inset {
-  border-radius: 0.75rem;
+  border-radius: var(--radius-control);
   border: 1px solid color-mix(in oklab, var(--color-ink-700) 80%, transparent);
   background: color-mix(in oklab, var(--color-ink-950) 55%, transparent);
 }

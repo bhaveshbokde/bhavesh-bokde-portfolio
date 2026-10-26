@@ -282,7 +282,7 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
       >
         <Icon name="Terminal" size={14} />
         <span className="pr-6">Jump to…</span>
-        <kbd className="rounded border border-ink-600 bg-ink-900 px-1.5 py-0.5 font-mono text-[10px] text-mist-500 group-hover:border-ink-500">
+        <kbd className="rounded border border-ink-600 bg-ink-900 px-1.5 py-0.5 font-mono text-micro text-mist-500 group-hover:border-ink-500">
           ⌘K
         </kbd>
       </button>
@@ -324,9 +324,9 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
                   setActiveIndex(0);
                 }}
                 onKeyDown={onInputKeyDown}
-                className="h-14 w-full bg-transparent text-[15px] text-mist-100 outline-none placeholder:text-mist-600"
+                className="h-14 w-full bg-transparent text-body text-mist-100 outline-none placeholder:text-mist-600"
               />
-              <kbd className="shrink-0 rounded border border-ink-600 bg-ink-850 px-1.5 py-0.5 font-mono text-[10px] text-mist-500">
+              <kbd className="shrink-0 rounded border border-ink-600 bg-ink-850 px-1.5 py-0.5 font-mono text-micro text-mist-500">
                 esc
               </kbd>
             </div>
@@ -347,7 +347,7 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
                 grouped.map(([group, items]) => (
                   <div key={group} className="mb-1">
                     <p
-                      className="px-3 py-2 font-mono text-[10px] tracking-[0.18em] text-mist-600 uppercase"
+                      className="px-3 py-2 eyebrow-sm text-mist-600"
                       aria-hidden="true"
                     >
                       {group}
@@ -377,7 +377,7 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
                           />
                           <span className="flex-1">{command.label}</span>
                           {command.hint && (
-                            <span className="font-mono text-[10px] text-mist-600">
+                            <span className="font-mono text-micro text-mist-600">
                               {command.hint}
                             </span>
                           )}
@@ -398,12 +398,12 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
 
             {/* --- footer --- */}
             <div className="flex items-center justify-between gap-3 border-t border-ink-700 px-4 py-2.5">
-              <p className="flex items-center gap-3 font-mono text-[10px] text-mist-600">
+              <p className="flex items-center gap-3 font-mono text-micro text-mist-600">
                 <span>↑↓ navigate</span>
                 <span>↵ select</span>
                 <span>esc close</span>
               </p>
-              <p aria-live="polite" className="font-mono text-[10px] text-mist-600">
+              <p aria-live="polite" className="font-mono text-micro text-mist-600">
                 {flat.length} result{flat.length === 1 ? "" : "s"}
               </p>
             </div>

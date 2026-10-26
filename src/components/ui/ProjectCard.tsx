@@ -112,7 +112,7 @@ export function ProjectCard({ project }: { project: Project }) {
           </Link>
         </h3>
 
-        <p className="mt-1 font-mono text-[11px] tracking-wide text-mist-500">
+        <p className="mt-1 font-mono text-label tracking-wide text-mist-500">
           {project.category}
         </p>
 
@@ -125,7 +125,7 @@ export function ProjectCard({ project }: { project: Project }) {
           <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-ink-700/60 pt-4">
             {project.metrics.slice(0, 2).map((metric) => (
               <div key={metric.label}>
-                <dt className="font-mono text-[10px] tracking-[0.16em] text-mist-600 uppercase">
+                <dt className="eyebrow-sm text-mist-600">
                   {metric.label}
                 </dt>
                 <dd

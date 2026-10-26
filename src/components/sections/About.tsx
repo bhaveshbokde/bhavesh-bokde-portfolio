@@ -30,7 +30,7 @@ export function About() {
       <div className="grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:gap-16">
         {/* ---------------- narrative ---------------- */}
         <Reveal>
-          <div className="space-y-5 text-[15px] leading-[1.75] text-mist-300 md:text-base">
+          <div className="space-y-5 text-body leading-[1.75] text-mist-300 md:text-base">
             {profile.about.map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
@@ -54,7 +54,7 @@ export function About() {
                   key={fact.label}
                   className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
                 >
-                  <dt className="font-mono text-[11px] tracking-[0.18em] text-mist-500 uppercase">
+                  <dt className="eyebrow text-mist-500">
                     {fact.label}
                   </dt>
                   <dd className="text-right">

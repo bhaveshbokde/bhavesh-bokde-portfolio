@@ -164,7 +164,7 @@ export function Header({
           >
             <span
               aria-hidden="true"
-              className="relative grid h-9 w-9 place-items-center rounded-lg border border-ink-600 bg-ink-850 font-display text-[13px] font-bold tracking-tight text-mist-100 transition-colors duration-300 group-hover:border-azure-500/60"
+              className="relative grid h-9 w-9 place-items-center rounded-lg border border-ink-600 bg-ink-850 font-display text-caption font-bold tracking-tight text-mist-100 transition-colors duration-300 group-hover:border-azure-500/60"
             >
               <span className="absolute inset-0 rounded-lg bg-gradient-to-br from-azure-500/20 to-iris-500/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               <span className="relative">{monogram}</span>
