@@ -24,7 +24,7 @@ export default function NotFound() {
     <section className="relative flex min-h-[80vh] items-center py-24">
       <div className="container-page">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="font-mono text-[11px] tracking-[0.3em] text-azure-400 uppercase">
+          <p className="font-mono text-label tracking-[0.3em] text-azure-400 uppercase">
             Error 404
           </p>
 
@@ -55,7 +55,7 @@ export default function NotFound() {
           </div>
 
           <nav aria-label="Site sections" className="mt-12">
-            <p className="font-mono text-[11px] tracking-[0.2em] text-mist-600 uppercase">
+            <p className="eyebrow text-mist-600">
               Or jump to
             </p>
             <ul className="mt-4 flex flex-wrap justify-center gap-2">

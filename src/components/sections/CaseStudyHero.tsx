@@ -29,7 +29,7 @@ export function CaseStudyHero({ project }: { project: Project }) {
         <div className="flex flex-wrap items-center gap-2.5">
           <KindBadge kind={project.kind} />
           <StatusBadge status={project.status} />
-          <span className="font-mono text-[11px] tracking-wide text-mist-500">
+          <span className="font-mono text-label tracking-wide text-mist-500">
             {project.category}
           </span>
         </div>
@@ -48,7 +48,7 @@ export function CaseStudyHero({ project }: { project: Project }) {
           behind one integration.
         </p>
 
-        <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-mist-400">
+        <p className="mt-4 max-w-3xl text-body leading-relaxed text-mist-400">
           It is <em className="text-mist-300 not-italic">not</em> the Account
           Aggregator, and not a gateway that reaches banks directly. The
           aggregator owns the user&apos;s consent journey; AAConnect orchestrates
@@ -56,7 +56,7 @@ export function CaseStudyHero({ project }: { project: Project }) {
         </p>
 
         {/* ---- end-to-end summary ---- */}
-        <ol className="mt-8 flex flex-wrap items-center gap-x-1.5 gap-y-2 font-mono text-[11px] text-mist-500">
+        <ol className="mt-8 flex flex-wrap items-center gap-x-1.5 gap-y-2 font-mono text-label text-mist-500">
           {[
             "client request",
             "consent handle",
@@ -122,7 +122,7 @@ export function CaseStudyHero({ project }: { project: Project }) {
             <Icon name="Lock" size={15} className="text-iris-300" />
           </span>
           <div>
-            <h2 className="font-mono text-[11px] tracking-[0.2em] text-iris-300 uppercase">
+            <h2 className="eyebrow text-iris-300">
               What this page is
             </h2>
             <p className="mt-2.5 text-sm leading-relaxed text-mist-400">
@@ -165,12 +165,12 @@ function HeroFact({
 }) {
   return (
     <div className="surface-card p-4">
-      <p className="flex items-center gap-2 font-mono text-[10px] tracking-[0.16em] text-mist-600 uppercase">
+      <p className="flex items-center gap-2 eyebrow-sm text-mist-600">
         <Icon name={icon} size={11} className="text-azure-400" />
         {label}
       </p>
       <p className="mt-2 font-display text-base font-semibold text-mist-50">{value}</p>
-      <p className="mt-1 text-[11px] leading-snug text-mist-500">{note}</p>
+      <p className="mt-1 text-label leading-snug text-mist-500">{note}</p>
     </div>
   );
 }

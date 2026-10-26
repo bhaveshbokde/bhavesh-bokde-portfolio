@@ -58,7 +58,7 @@ const KIND: Record<ProjectKind, { label: string; icon: string; className: string
   };
 
 const BASE =
-  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] " +
+  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-label " +
   "tracking-wide whitespace-nowrap";
 
 export function StatusBadge({ status, className }: { status: ProjectStatus; className?: string }) {

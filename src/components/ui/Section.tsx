@@ -60,7 +60,7 @@ export function Section({
             )}
           >
             {eyebrow && (
-              <p className="mb-4 flex items-center gap-3 font-mono text-xs tracking-[0.22em] text-azure-400 uppercase">
+              <p className="mb-4 flex items-center gap-3 font-mono text-xs tracking-display text-azure-400 uppercase">
                 <span
                   aria-hidden="true"
                   className="h-px w-8 bg-gradient-to-r from-azure-500/80 to-transparent"

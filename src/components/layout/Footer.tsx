@@ -36,7 +36,7 @@ export function Footer() {
             <div className="flex items-center gap-3">
               <span
                 aria-hidden="true"
-                className="grid h-9 w-9 place-items-center rounded-lg border border-ink-600 bg-ink-850 font-display text-[13px] font-bold text-mist-100"
+                className="grid h-9 w-9 place-items-center rounded-lg border border-ink-600 bg-ink-850 font-display text-caption font-bold text-mist-100"
               >
                 {profile.monogram}
               </span>
@@ -55,7 +55,7 @@ export function Footer() {
 
           {/* --- navigation --- */}
           <nav aria-label="Footer">
-            <h2 className="font-mono text-[11px] tracking-[0.2em] text-mist-500 uppercase">
+            <h2 className="eyebrow text-mist-500">
               Navigate
             </h2>
             <ul className="mt-4 space-y-2.5">
@@ -84,7 +84,7 @@ export function Footer() {
 
           {/* --- elsewhere --- */}
           <div>
-            <h2 className="font-mono text-[11px] tracking-[0.2em] text-mist-500 uppercase">
+            <h2 className="eyebrow text-mist-500">
               Elsewhere
             </h2>
             <ul className="mt-4 space-y-2.5">
@@ -101,7 +101,7 @@ export function Footer() {
                       >
                         <Icon name={link.icon} size={15} />
                         {link.label}
-                        <span className="font-mono text-[10px] text-mist-600">
+                        <span className="font-mono text-micro text-mist-600">
                           (not configured)
                         </span>
                       </span>

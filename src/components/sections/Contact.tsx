@@ -122,7 +122,7 @@ export function Contact() {
                     <Icon name={channel.icon} size={15} />
                   </span>
                   <span className="min-w-0 text-left">
-                    <dt className="font-mono text-[10px] tracking-[0.18em] text-mist-600 uppercase">
+                    <dt className="eyebrow-sm text-mist-600">
                       {channel.label}
                     </dt>
                     <dd className="truncate text-sm text-mist-200">{channel.value}</dd>
