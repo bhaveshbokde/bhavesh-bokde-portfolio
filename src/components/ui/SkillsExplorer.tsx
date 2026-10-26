@@ -52,6 +52,17 @@ export function SkillsExplorer({ groups }: { groups: SkillsExplorerGroup[] }) {
     [groups, active],
   );
 
+  /* The legend's count key. Taken from the data — the highest count any chip
+     actually shows — so the example in the legend matches something visible
+     on the page rather than being a made-up digit. */
+  const exampleCount = useMemo(() => {
+    const highest = Math.max(
+      0,
+      ...groups.flatMap((group) => group.skills.map((s) => s.projects.length)),
+    );
+    return highest > 0 ? highest : 1;
+  }, [groups]);
+
   const chips = [
     { id: "all", label: "All", count: totalCount },
     ...groups.map((group) => ({
@@ -202,23 +213,28 @@ export function SkillsExplorer({ groups }: { groups: SkillsExplorerGroup[] }) {
         })}
       </div>
 
-      {/* Legend for the production marker. */}
-      <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-label text-mist-600">
+      {/* Legend for the two markers a chip can carry.
+          The count key used to render a literal "n" next to the words
+          "projects on this site using it", which read as an unsubstituted
+          template variable rather than as a stand-in for a number. It now
+          shows a real count from the data and says what it means in a
+          sentence. */}
+      <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3 text-label text-mist-500">
         <p className="flex items-center gap-2">
           <span
             aria-hidden="true"
             className="h-1.5 w-1.5 rounded-full bg-azure-400"
           />
-          used in production at work
+          A dot marks a technology used in production at work
         </p>
         <p className="flex items-center gap-2">
           <span
             aria-hidden="true"
-            className="rounded bg-ink-950/60 px-1 text-[9px] text-mist-600"
+            className="rounded bg-ink-950/60 px-1 font-mono text-[9px] text-mist-500"
           >
-            n
+            {exampleCount}
           </span>
-          projects on this site using it
+          The number counts projects on this site that use it
         </p>
       </div>
     </div>

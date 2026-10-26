@@ -153,13 +153,20 @@ export function ExperienceSection() {
                           </span>
                           <p className="text-body leading-[1.75] text-mist-300">
                             {highlight.text}
+                            {/* The marker exists so a figure reported in a
+                                résumé is never mistaken for one benchmarked
+                                for this site. It used to read
+                                "resume-reported" in lower-case mono, which
+                                looked like a debugging tag left in the markup
+                                rather than a deliberate caveat. Same meaning,
+                                written as a sentence. */}
                             {highlight.resumeReported && (
                               <span
-                                className="ml-2 inline-flex items-center gap-1 rounded border border-ink-600 bg-ink-850 px-1.5 py-0.5 align-middle font-mono text-micro text-mist-500"
-                                title="This figure is reported in my resume. It is not a measurement independently re-run for this website."
+                                className="ml-2 inline-flex items-center gap-1.5 rounded border border-ink-600 bg-ink-850 px-2 py-0.5 align-middle text-micro text-mist-400"
+                                title="This figure is reported in my résumé. It is not a measurement independently re-run for this website."
                               >
                                 <Icon name="Info" size={10} />
-                                resume-reported
+                                Reported in my résumé
                               </span>
                             )}
                           </p>

@@ -143,9 +143,13 @@ export function Contact() {
 
           {/* ───────── other channels ─────────
               A hairline rail rather than a grid of boxes: these are secondary
-              to the address above, and boxing them gave them equal weight. */}
+              to the address above, and boxing them gave them equal weight.
+
+              Two columns before three: at 768px a three-column rail left each
+              cell too narrow for "Pune, Maharashtra, India", which the old
+              `truncate` then quietly clipped to "Pune, Maharashtra,…". */}
           {channels.length > 0 && (
-            <dl className="mx-auto mt-12 grid max-w-3xl gap-px overflow-hidden border-t border-ink-700/60 pt-8 sm:grid-cols-3">
+            <dl className="mx-auto mt-12 grid max-w-3xl gap-x-6 gap-y-2 border-t border-ink-700/60 pt-8 sm:grid-cols-2 lg:grid-cols-3">
               {channels.map((channel) => {
                 const content = (
                   <>
@@ -156,7 +160,10 @@ export function Contact() {
                       <dt className="eyebrow-sm text-mist-600">
                         {channel.label}
                       </dt>
-                      <dd className="truncate text-sm text-mist-200">
+                      {/* Wraps rather than truncates. A clipped handle or
+                          city is worse than a two-line one — the visitor
+                          cannot tell what was removed. */}
+                      <dd className="text-sm break-words text-mist-200">
                         {channel.value}
                       </dd>
                     </span>

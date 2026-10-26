@@ -176,7 +176,10 @@ export default async function ProjectPage({ params }: PageProps) {
       <div className="container-page">
         {/* ---------------- breadcrumb ---------------- */}
         <nav aria-label="Breadcrumb" className="mb-12">
-          <ol className="flex items-center gap-2 font-mono text-label tracking-wide text-mist-500">
+          {/* Wraps rather than truncating. At 320px "SQL Interview Mastery"
+              was being clipped by 7px, which turns the one item that tells
+              you where you are into a word fragment. */}
+          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-label tracking-wide text-mist-500">
             <li>
               <Link
                 href="/"
@@ -195,7 +198,7 @@ export default async function ProjectPage({ params }: PageProps) {
               </Link>
             </li>
             <li aria-hidden="true">/</li>
-            <li aria-current="page" className="truncate text-mist-200">
+            <li aria-current="page" className="min-w-0 break-words text-mist-200">
               {project.name}
             </li>
           </ol>

@@ -64,3 +64,12 @@ Thumbs.db
 
 # visual-check output from scripts/screenshots.mjs
 /screenshots/
+
+# local-only interview preparation — never commit or push
+#
+# Personal study material. It belongs on this machine and nowhere else: not in
+# the public repository, not in a deployment artefact, not on Vercel. The
+# exact filename is listed rather than a glob so the rule cannot quietly stop
+# matching if the file is renamed — a rename should break the ignore loudly,
+# not leak the file silently.
+INTERVIEW_PREPARATION_LOCAL.md
