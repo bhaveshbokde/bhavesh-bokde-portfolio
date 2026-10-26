@@ -3,21 +3,30 @@ import { visibleSorted } from "@/lib/content";
 import { Section } from "@/components/ui/Section";
 import { Reveal } from "@/components/ui/Reveal";
 import { Disclosure } from "@/components/ui/Disclosure";
-import { Icon } from "@/components/ui/Icon";
 
 /**
  * About.
  *
- * Structured for a recruiter who is skimming: two paragraphs that stand on
- * their own, a strip of hard facts, and the longer story behind a "Read more"
- * control for anyone who actually wants it. Nobody is forced to read four
- * paragraphs to find out where I live.
+ * Composed as an editorial opening rather than a text block beside a card.
+ *
+ * The first paragraph is set noticeably larger than the rest — a drop-lead.
+ * It is the one piece of prose a skimming reader is actually going to read,
+ * so it gets the weight, and everything after it steps down to body size. A
+ * uniform wall of four equally-sized paragraphs gives the eye nowhere to land
+ * and quietly asks the reader to do the prioritising themselves.
+ *
+ * The facts are a hairline rail, not a surface card. They are metadata about a
+ * person, not a component of the system; boxing them made them compete with
+ * the narrative for attention when their job is to sit quietly beside it. On
+ * desktop the rail is sticky, so the facts stay in view while the longer
+ * story scrolls past them.
  *
  * `aboutExpanded` and `facts` are both optional in the data — leave either out
  * and this renders correctly without them.
  */
 export function About() {
   const facts = visibleSorted(profile.facts ?? []);
+  const [lead, ...rest] = profile.about;
   const hasExpanded = (profile.aboutExpanded?.length ?? 0) > 0;
 
   return (
@@ -27,68 +36,88 @@ export function About() {
       title="Backend engineering, at the edges where systems meet"
       divider={false}
     >
-      <div className="grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:gap-16">
-        {/* ---------------- narrative ---------------- */}
-        <Reveal>
-          <div className="space-y-5 text-body leading-[1.75] text-mist-300 md:text-base">
-            {profile.about.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
+      <div className="grid gap-14 lg:grid-cols-12 lg:gap-16">
+        {/* ───────────── narrative ───────────── */}
+        <div className="min-w-0 lg:col-span-7">
+          <Reveal>
+            {lead && (
+              <p className="text-lg leading-[1.6] font-light text-mist-100 text-pretty md:text-xl md:leading-[1.58]">
+                {lead}
+              </p>
+            )}
+          </Reveal>
 
-            {hasExpanded && (
-              <Disclosure showLabel="Read more" hideLabel="Show less">
-                {profile.aboutExpanded?.map((paragraph, index) => (
+          {rest.length > 0 && (
+            <Reveal delay={0.06}>
+              <div className="mt-7 space-y-5 text-body leading-[1.8] text-mist-400">
+                {rest.map((paragraph, index) => (
                   <p key={index}>{paragraph}</p>
                 ))}
-              </Disclosure>
-            )}
-          </div>
-        </Reveal>
+              </div>
+            </Reveal>
+          )}
 
-        {/* ---------------- facts ---------------- */}
+          {hasExpanded && (
+            <Reveal delay={0.1}>
+              <div className="mt-7 border-t border-ink-800 pt-6">
+                <Disclosure showLabel="Read more" hideLabel="Show less">
+                  <div className="space-y-5 text-body leading-[1.8] text-mist-400">
+                    {profile.aboutExpanded?.map((paragraph, index) => (
+                      <p key={index}>{paragraph}</p>
+                    ))}
+                  </div>
+                </Disclosure>
+              </div>
+            </Reveal>
+          )}
+        </div>
+
+        {/* ───────────── facts rail ───────────── */}
         {facts.length > 0 && (
-          <Reveal delay={0.08}>
-            <dl className="surface-card divide-y divide-ink-700/60 overflow-hidden">
-              {facts.map((fact) => (
-                <div
-                  key={fact.label}
-                  className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
-                >
-                  <dt className="eyebrow text-mist-500">
-                    {fact.label}
-                  </dt>
-                  <dd className="text-right">
-                    <span className="text-sm font-medium text-mist-100">
-                      {fact.value}
-                    </span>
-                    {fact.note && (
-                      <span className="mt-0.5 block text-xs text-mist-500">
-                        {fact.note}
-                      </span>
-                    )}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+          <div className="min-w-0 lg:col-span-4 lg:col-start-9">
+            <Reveal delay={0.08}>
+              <div className="lg:sticky lg:top-28">
+                <dl className="relative border-l border-ink-700/70 pl-6">
+                  {/* The rail lights at the top and fades out, so it reads as a
+                      thread rather than a border. */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-0 -left-px h-20 w-px bg-gradient-to-b from-azure-400/80 to-transparent"
+                  />
 
-            {/* A short, honest framing of what is professional work and what
-                is personal. It appears once, here, and the badges on each
-                project carry it from then on. */}
-            <div className="surface-inset mt-5 flex gap-3 px-5 py-4">
-              <Icon
-                name="Info"
-                size={16}
-                className="mt-0.5 shrink-0 text-azure-400"
-              />
-              <p className="text-xs leading-relaxed text-mist-400">
-                Work on this site is labelled either{" "}
-                <span className="text-iris-300">Professional</span> — built for an
-                employer and described rather than published — or{" "}
-                <span className="text-mist-200">Independent</span>, which means a
-                public repository you can clone and read.
-              </p>
-            </div>
-          </Reveal>
+                  {facts.map((fact) => (
+                    <div
+                      key={fact.label}
+                      className="border-b border-ink-800 py-5 first:pt-0 last:border-b-0 last:pb-0"
+                    >
+                      <dt className="eyebrow-sm text-mist-600">{fact.label}</dt>
+                      <dd className="mt-2">
+                        <span className="font-display text-base font-medium text-mist-100">
+                          {fact.value}
+                        </span>
+                        {fact.note && (
+                          <span className="mt-1 block text-caption text-mist-500">
+                            {fact.note}
+                          </span>
+                        )}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+
+                {/* A short, honest framing of what is professional work and
+                    what is personal. It appears once, here, and the badges on
+                    each project carry it from then on. */}
+                <p className="mt-8 border-l-2 border-ink-700 pl-5 text-caption leading-relaxed text-mist-500">
+                  Work on this site is labelled either{" "}
+                  <span className="text-iris-300">Professional</span> — built for
+                  an employer and described rather than published — or{" "}
+                  <span className="text-mist-200">Independent</span>, which means
+                  a public repository you can clone and read.
+                </p>
+              </div>
+            </Reveal>
+          </div>
         )}
       </div>
     </Section>
