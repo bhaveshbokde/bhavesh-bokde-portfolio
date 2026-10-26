@@ -21,8 +21,15 @@ next-env.d.ts
 /playwright/.cache/
 
 # environment & secrets — never commit these
+#
+# `.env*` is the broad form the Vercel CLI appends on `vercel link` / `vercel
+# env pull`; it is kept here so the CLI finds what it expects and does not add
+# a duplicate at the end of the file. The negation MUST stay after it: git
+# applies the last matching pattern, so a later `.env*` would otherwise
+# silently re-ignore the example file.
 .env
 .env.*
+.env*
 !.env.example
 *.pem
 *.key
