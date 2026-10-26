@@ -33,3 +33,20 @@ export function slugify(value: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
+
+/**
+ * Resolves a nav anchor so it works from any route.
+ *
+ * The nav data stores section anchors as `#about`, which is the honest
+ * representation — they name a section, not a page. But rendered verbatim on
+ * `/projects/aaconnect` that is a link to an element which does not exist
+ * there, so clicking "About" from a project page did nothing at all.
+ *
+ * Prefixing with `/` makes it a link to the homepage's anchor, which is what
+ * the visitor means from anywhere. On the homepage itself `/#about` still
+ * behaves as a same-page jump, so one form is correct everywhere and no
+ * component needs to know which route it is on.
+ */
+export function sectionHref(href: string): string {
+  return href.startsWith("#") ? `/${href}` : href;
+}

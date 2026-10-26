@@ -145,7 +145,15 @@ export default async function ProjectPage({ params }: PageProps) {
 
   /* Body sections, assembled in reading order and stripped of anything the
      project does not supply — so a lightly-documented project renders a short
-     page rather than a page of empty headings. */
+     page rather than a page of empty headings.
+
+     Anchors are namespaced with `section-`. Case-study ids come from
+     `projects.ts`, and one of them was literally "architecture", which
+     collided with the explorer's own `id="architecture"` on the AAConnect
+     page. Two elements shared an id: invalid HTML, and the hero's "Explore
+     the architecture" button jumped to whichever came first in the document
+     rather than to the explorer. A prefix makes the collision impossible
+     instead of relying on whoever edits the data to avoid it. */
   const blocks: BodyBlock[] = [
     { id: "problem", title: "The problem", paragraphs: project.problem ? [project.problem] : undefined },
     { id: "features", title: "Key features", bullets: project.features },
@@ -159,9 +167,11 @@ export default async function ProjectPage({ params }: PageProps) {
       bullets: section.bullets,
     })),
     { id: "lessons", title: "What I took away", bullets: project.lessons },
-  ].filter(
-    (block) => (block.paragraphs?.length ?? 0) > 0 || (block.bullets?.length ?? 0) > 0,
-  );
+  ]
+    .filter(
+      (block) => (block.paragraphs?.length ?? 0) > 0 || (block.bullets?.length ?? 0) > 0,
+    )
+    .map((block) => ({ ...block, id: `section-${block.id}` }));
 
   /* Previous / next, over the same visible, ordered list the homepage shows —
      so neither hidden nor retired work can be reached by walking the pager. */
