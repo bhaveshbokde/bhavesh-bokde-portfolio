@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SkillsExplorer } from "./SkillsExplorer";
-import type { SkillGroup } from "@/lib/content";
+import type { SkillsExplorerGroup } from "./SkillsExplorer";
 
 /**
  * The point of these tests is the claim in the README: adding, removing or
@@ -11,18 +11,18 @@ import type { SkillGroup } from "@/lib/content";
  * written down somewhere in a component — so that is what is asserted here.
  */
 
-const groups: SkillGroup[] = [
+const groups: SkillsExplorerGroup[] = [
   {
     category: { id: "backend", label: "Backend", icon: "Server", description: "Services." },
     skills: [
-      { id: "java", name: "Java", category: "backend", usedInProduction: true },
-      { id: "spring", name: "Spring Boot", category: "backend", usedInProduction: true },
-      { id: "hibernate", name: "Hibernate", category: "backend" },
+      { id: "java", name: "Java", category: "backend", usedInProduction: true, projects: [{ slug: "finsight", name: "FinSight" }] },
+      { id: "spring", name: "Spring Boot", category: "backend", usedInProduction: true, projects: [] },
+      { id: "hibernate", name: "Hibernate", category: "backend", projects: [] },
     ],
   },
   {
     category: { id: "databases", label: "Databases" },
-    skills: [{ id: "postgres", name: "PostgreSQL", category: "databases" }],
+    skills: [{ id: "postgres", name: "PostgreSQL", category: "databases", projects: [] }],
   },
 ];
 
@@ -38,10 +38,10 @@ describe("SkillsExplorer", () => {
   });
 
   it("counts come from the data, not from a hardcoded number", () => {
-    const extended: SkillGroup[] = [
+    const extended: SkillsExplorerGroup[] = [
       {
         ...groups[0]!,
-        skills: [...groups[0]!.skills, { id: "jpa", name: "JPA", category: "backend" }],
+        skills: [...groups[0]!.skills, { id: "jpa", name: "JPA", category: "backend", projects: [] }],
       },
       groups[1]!,
     ];

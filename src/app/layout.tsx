@@ -6,10 +6,11 @@ import "./globals.css";
 
 import { profile } from "@/data/profile";
 import { siteConfig } from "@/data/site-config";
-import { getNavItems } from "@/lib/content";
+import { getCommands, getNavItems } from "@/lib/content";
 import { assertContentIsValid } from "@/lib/validate";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { Aurora } from "@/components/visuals/Aurora";
 
 /**
@@ -156,6 +157,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </a>
 
         <Aurora />
+        <ScrollProgress />
 
         <Header
           monogram={profile.monogram}
@@ -163,6 +165,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           navItems={navItems}
           resumePath={siteConfig.resumePath}
           resumeDownloadName={siteConfig.resumeDownloadName}
+          commands={getCommands()}
         />
 
         <main id="main" tabIndex={-1}>

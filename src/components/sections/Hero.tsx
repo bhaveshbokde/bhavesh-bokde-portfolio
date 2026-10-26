@@ -4,6 +4,8 @@ import { getHeroLinks, getSummary } from "@/lib/content";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { HeroVisual } from "@/components/visuals/HeroVisual";
+import { ParticleField } from "@/components/visuals/ParticleField";
+import { TechMarquee } from "@/components/ui/TechMarquee";
 
 /**
  * The hero.
@@ -29,6 +31,15 @@ export function Hero() {
       aria-labelledby="hero-heading"
       className="relative flex min-h-[92vh] items-center overflow-hidden pt-28 pb-16 md:min-h-screen md:pt-32"
     >
+      {/* The particle network sits behind the hero only, and stops its loop
+          the moment this section scrolls out of view.
+
+          Deliberately NOT marked `data-motion="decorative"`: under reduced
+          motion it paints a single static frame, and the network is worth
+          keeping as texture. It is the movement that gets dropped, not the
+          picture. */}
+      <ParticleField className="pointer-events-none absolute inset-0 h-full w-full" />
+
       <div className="container-page relative w-full">
         {/* The copy column is given the extra width so "Java Backend Engineer"
             sits on one line at desktop. Wrapped, the gradient restarts on the
@@ -69,6 +80,8 @@ export function Hero() {
             <p className="mt-7 max-w-xl text-base leading-relaxed text-mist-400 md:text-[17px]">
               {summary}
             </p>
+
+            <TechMarquee items={profile.heroTechnologies ?? []} />
 
             {/* ---------------- actions ---------------- */}
             <div className="mt-9 flex flex-wrap items-center gap-3">

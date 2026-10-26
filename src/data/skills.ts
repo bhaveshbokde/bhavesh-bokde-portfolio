@@ -138,6 +138,15 @@ export const skills: Skill[] = [
     usedInProduction: true,
     order: 7,
   },
+  {
+    id: "kafka",
+    name: "Apache Kafka",
+    category: "backend",
+    // Deliberately no production marker: Kafka is used in my own projects, not
+    // in the day job, and the marker means something specific.
+    description: "Outbox-driven pipelines in FinSight and the notification service.",
+    order: 8,
+  },
 
   /* ----- Databases ------------------------------------------------ */
   {

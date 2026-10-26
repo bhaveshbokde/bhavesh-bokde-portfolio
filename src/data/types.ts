@@ -45,6 +45,13 @@ export interface Profile {
   phone?: string;
 
   /**
+   * Technologies called out in the hero, in order. Every entry must also exist
+   * in `src/data/skills.ts` — validation enforces it, so the hero and the
+   * skills section cannot drift apart.
+   */
+  heroTechnologies?: string[];
+
+  /**
    * The month work started, ISO `YYYY-MM-DD`. Years of experience are derived
    * from this so the number on the site never goes stale — see
    * `formatYearsOfExperience()` in `src/lib/content.ts`.
@@ -239,6 +246,15 @@ export interface Project extends Listable {
   preview?: string;
   /** Alt text for the preview. Required whenever `preview` is set. */
   previewAlt?: string;
+  /**
+   * Renders the explorable architecture diagram defined in
+   * `src/data/architecture.ts` instead of the static `preview` image.
+   *
+   * Only one project should set this — the diagram data is specific to it.
+   * The static `preview` is still used for the project card, where an
+   * interactive diagram would be too small to operate.
+   */
+  interactiveArchitecture?: boolean;
   /**
    * `true` promotes the project into the featured slot and gives it a richer
    * card treatment.

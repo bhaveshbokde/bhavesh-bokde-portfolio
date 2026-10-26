@@ -13,9 +13,23 @@ import type { Project, Skill } from "@/data/types";
  * the real content passes, and each rule actually fires when broken.
  */
 
-/** A copy of the real content with one slice swapped out. */
+/**
+ * A copy of the real content with one slice swapped out.
+ *
+ * Replacing `skills` wholesale also clears `profile.heroTechnologies`. The
+ * hero/skills cross-check is a real rule, and without this every skill-focused
+ * test would additionally trip it — five unrelated failures telling you the
+ * hero mentions Java and the two-item fixture does not. Each test should fail
+ * for the one reason it is named after.
+ */
 function withOverrides(overrides: Partial<ContentBundle>): ContentBundle {
-  return { ...defaultContent, ...overrides };
+  const base = { ...defaultContent, ...overrides };
+
+  if (overrides.skills && !overrides.profile) {
+    base.profile = { ...base.profile, heroTechnologies: [] };
+  }
+
+  return base;
 }
 
 describe("the site's real content", () => {
@@ -65,6 +79,29 @@ describe("skill rules", () => {
   it("accepts a minimal skill with every optional field omitted", () => {
     const skills: Skill[] = [{ id: "minimal", name: "Minimal", category: "backend" }];
     expect(validateContent(withOverrides({ skills }))).toEqual([]);
+  });
+});
+
+describe("hero / skills cross-check", () => {
+  it("rejects a hero technology that is not a known skill", () => {
+    const content = withOverrides({});
+    content.profile = { ...content.profile, heroTechnologies: ["Haskell"] };
+
+    const messages = validateContent(content).map((i) => i.message);
+    expect(messages.some((m) => m.includes("Haskell"))).toBe(true);
+    expect(messages.some((m) => m.includes("src/data/skills.ts"))).toBe(true);
+  });
+
+  it("accepts the real hero list, so the two files agree today", () => {
+    expect(validateContent()).toEqual([]);
+    expect(defaultContent.profile.heroTechnologies?.length).toBeGreaterThan(0);
+  });
+
+  it("treats an absent hero list as fine", () => {
+    const content = withOverrides({});
+    const { heroTechnologies: _omitted, ...profile } = content.profile;
+    content.profile = profile;
+    expect(validateContent(content)).toEqual([]);
   });
 });
 

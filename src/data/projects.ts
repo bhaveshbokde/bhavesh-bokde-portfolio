@@ -125,6 +125,9 @@ export const projects: Project[] = [
       "Generic high-level architecture diagram: client applications call an Account Aggregator " +
       "gateway, which uses consent and financial-information services, adapters to several " +
       "Account Aggregators, and a datastore plus distributed cache.",
+    // Swaps the static image for the explorable diagram wherever there is room
+    // to operate it. The static SVG above is still used on the project card.
+    interactiveArchitecture: true,
 
     caseStudy: [
       {

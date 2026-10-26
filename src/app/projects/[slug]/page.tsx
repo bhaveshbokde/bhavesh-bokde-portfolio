@@ -12,6 +12,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { ButtonLink } from "@/components/ui/Button";
 import { KindBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { ConfidentialityNotice } from "@/components/ui/ConfidentialityNotice";
+import { ArchitectureExplorer } from "@/components/visuals/ArchitectureExplorer";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -190,8 +191,25 @@ export default async function ProjectPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* ---------------- preview ---------------- */}
-        {project.preview && (
+        {/* ---------------- architecture ---------------- */}
+        {project.interactiveArchitecture ? (
+          <section aria-labelledby="arch-heading" className="mt-12">
+            <h2
+              id="arch-heading"
+              className="flex items-center gap-2.5 font-display text-xl font-semibold text-mist-50"
+            >
+              <Icon name="Network" size={17} className="text-azure-400" />
+              Explore the architecture
+            </h2>
+            <p className="mt-3 mb-6 max-w-2xl text-[15px] leading-relaxed text-mist-400">
+              Select a component to read what it does, or play the walkthrough to
+              follow a request from consent through to delivered records —
+              including what happens when a provider fails.
+            </p>
+            <ArchitectureExplorer />
+          </section>
+        ) : (
+          project.preview && (
           <Reveal>
             <figure className="surface-card mt-12 overflow-hidden">
               <figcaption className="border-b border-ink-700/70 px-5 py-3 font-mono text-[11px] tracking-[0.16em] text-mist-500 uppercase">
@@ -211,6 +229,7 @@ export default async function ProjectPage({ params }: PageProps) {
               </div>
             </figure>
           </Reveal>
+          )
         )}
 
         {/* ---------------- metrics ---------------- */}

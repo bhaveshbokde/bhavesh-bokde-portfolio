@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { SkillGroup } from "@/lib/content";
+import type { SkillCategory } from "@/data/types";
+import type { SkillWithContext } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import { Icon } from "./Icon";
 
@@ -17,7 +18,12 @@ import { Icon } from "./Icon";
  * announces "2 of 8 selected". A row of `<button>`s would give none of that
  * for free.
  */
-export function SkillsExplorer({ groups }: { groups: SkillGroup[] }) {
+export interface SkillsExplorerGroup {
+  category: SkillCategory;
+  skills: SkillWithContext[];
+}
+
+export function SkillsExplorer({ groups }: { groups: SkillsExplorerGroup[] }) {
   const [active, setActive] = useState<string>("all");
 
   const totalCount = useMemo(
@@ -120,6 +126,9 @@ export function SkillsExplorer({ groups }: { groups: SkillGroup[] }) {
                         skill.description,
                         skill.proficiency,
                         skill.usedInProduction ? "Used in production at work." : undefined,
+                        skill.projects.length > 0
+                          ? `In: ${skill.projects.map((p) => p.name).join(", ")}`
+                          : undefined,
                       ]
                         .filter(Boolean)
                         .join(" · ") || undefined
@@ -143,6 +152,16 @@ export function SkillsExplorer({ groups }: { groups: SkillGroup[] }) {
                         {skill.proficiency}
                       </span>
                     )}
+                    {/* How many of my own projects actually use it. Derived
+                        from each project's stack, so it cannot overstate. */}
+                    {skill.projects.length > 0 && (
+                      <span
+                        className="rounded bg-ink-950/60 px-1 text-[9px] text-mist-600"
+                        aria-label={`Used in ${skill.projects.length} project${skill.projects.length === 1 ? "" : "s"}`}
+                      >
+                        {skill.projects.length}
+                      </span>
+                    )}
                   </span>
                 </li>
               ))}
@@ -152,10 +171,21 @@ export function SkillsExplorer({ groups }: { groups: SkillGroup[] }) {
       </div>
 
       {/* Legend for the production marker. */}
-      <p className="mt-8 flex items-center justify-center gap-2 font-mono text-[11px] text-mist-600">
-        <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-azure-400" />
-        used in production at work
-      </p>
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[11px] text-mist-600">
+        <p className="flex items-center gap-2">
+          <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-azure-400" />
+          used in production at work
+        </p>
+        <p className="flex items-center gap-2">
+          <span
+            aria-hidden="true"
+            className="rounded bg-ink-950/60 px-1 text-[9px] text-mist-600"
+          >
+            n
+          </span>
+          projects on this site using it
+        </p>
+      </div>
     </div>
   );
 }

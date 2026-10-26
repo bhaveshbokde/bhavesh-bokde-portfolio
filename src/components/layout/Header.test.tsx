@@ -3,6 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Header } from "./Header";
 import type { NavItem } from "@/data/types";
+import type { Command } from "@/components/ui/CommandPalette";
 
 /**
  * The mobile menu is where keyboard support usually gets quietly dropped, so
@@ -10,6 +11,19 @@ import type { NavItem } from "@/data/types";
  * where it comes back to when it closes, and whether Tab can escape into the
  * page hidden behind the overlay.
  */
+
+/** A minimal command set — the palette has its own dedicated test file. */
+const commands: Command[] = [
+  { id: "go-about", label: "About", icon: "Info", group: "Jump to", href: "#about" },
+  {
+    id: "resume",
+    label: "Download resume",
+    icon: "Download",
+    group: "Actions",
+    href: "/resume/cv.pdf",
+    download: "cv.pdf",
+  },
+];
 
 const navItems: NavItem[] = [
   { label: "About", href: "#about" },
@@ -25,6 +39,7 @@ function renderHeader() {
       navItems={navItems}
       resumePath="/resume/cv.pdf"
       resumeDownloadName="cv.pdf"
+      commands={commands}
     />,
   );
 }
@@ -46,6 +61,7 @@ describe("Header — structure", () => {
         navItems={[{ label: "Writing", href: "#writing" }]}
         resumePath="/resume/cv.pdf"
         resumeDownloadName="cv.pdf"
+        commands={commands}
       />,
     );
     expect(screen.getByRole("link", { name: "Writing" })).toBeInTheDocument();
