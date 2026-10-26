@@ -1,306 +1,228 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { usePointerTilt } from "@/hooks/usePointerTilt";
+import { cn } from "@/lib/utils";
 
 /**
- * The hero's technical visual: an abstract consent-and-data-exchange flow.
+ * The hero's engineering visual: a request moving through a backend.
  *
- * A gateway core sits in the middle; requests arrive from the left, providers
- * answer from the right, and packets travel the connecting paths. It is the
- * actual shape of the work rather than decoration that happens to look
- * technical — which is the only reason it earns the space.
+ * It is a composed, layered panel rather than a diagram floating in space —
+ * a request enters, fans out through a service, hits a cache that sometimes
+ * misses, reaches persistence, and returns. The stage advances on a timer so
+ * the picture is always saying something, and the whole panel tilts gently
+ * towards a fine pointer.
  *
- * Implementation notes, because "a 3D hero" is usually where a portfolio's
- * performance goes to die:
+ * Why this and not Three.js: it is a dozen rounded rectangles and some
+ * strokes. A WebGL scene would ship hundreds of kilobytes and hold a GPU
+ * context to draw something that is fundamentally 2D, and it would be the
+ * slowest thing on the page on the phone of the recruiter most likely to be
+ * looking at it.
  *
- * - Pure inline SVG. No Three.js, no canvas, no model to download. The whole
- *   thing is a few kilobytes of markup and ships in the HTML.
- * - Motion is `stroke-dashoffset` and `opacity` on a handful of nodes. There
- *   is no per-frame JavaScript and nothing recalculates layout.
- * - With reduced motion, every animation is dropped and the diagram renders
- *   as a still — still legible, still the same picture.
+ * Honesty: every value shown is a static label describing a *kind* of thing —
+ * "cache", "retry", "p99" — never a number. Nothing here claims to be live
+ * telemetry, because none of it is.
  *
- * The labels are generic role names. Nothing here depicts a real internal
- * topology, and the numbers are synthetic.
+ * Under reduced motion the stage sits on the step that shows the most of the
+ * system and never advances, and the tilt is not wired up at all.
  */
 
-const NODES_LEFT = [
-  { id: "client", label: "Client app", y: 96 },
-  { id: "client2", label: "Lending flow", y: 186 },
+interface Stage {
+  id: string;
+  label: string;
+  /** Edge ids that carry the request during this stage. */
+  edges: string[];
+  /** Node ids lit during this stage. */
+  nodes: string[];
+  tone: "flow" | "warn";
+}
+
+const STAGES: Stage[] = [
+  { id: "ingress", label: "request accepted", edges: ["e1"], nodes: ["client", "api"], tone: "flow" },
+  { id: "validate", label: "validated · routed", edges: ["e2"], nodes: ["api", "svc"], tone: "flow" },
+  { id: "cache", label: "cache consulted", edges: ["e3"], nodes: ["svc", "cache"], tone: "flow" },
+  { id: "miss", label: "miss · falls through", edges: ["e4"], nodes: ["cache", "db"], tone: "warn" },
+  { id: "persist", label: "read committed", edges: ["e5"], nodes: ["db", "svc"], tone: "flow" },
+  { id: "respond", label: "response returned", edges: ["e6"], nodes: ["svc", "api", "client"], tone: "flow" },
+];
+
+const NODES = [
+  { id: "client", label: "client", x: 16, y: 104, w: 96, h: 44 },
+  { id: "api", label: "API", x: 150, y: 104, w: 84, h: 44 },
+  { id: "svc", label: "service", x: 272, y: 104, w: 96, h: 44 },
+  { id: "cache", label: "cache", x: 272, y: 22, w: 96, h: 40 },
+  { id: "db", label: "PostgreSQL", x: 272, y: 190, w: 116, h: 40 },
 ] as const;
 
-const NODES_RIGHT = [
-  { id: "aa", label: "Aggregators", y: 78 },
-  { id: "fip", label: "Providers", y: 158 },
-  { id: "store", label: "Datastore", y: 238 },
+const EDGES = [
+  { id: "e1", d: "M 112 126 H 150" },
+  { id: "e2", d: "M 234 126 H 272" },
+  { id: "e3", d: "M 304 104 V 62" },
+  { id: "e4", d: "M 336 62 C 336 96, 330 160, 330 190" },
+  { id: "e5", d: "M 300 190 V 148" },
+  { id: "e6", d: "M 272 138 H 150 M 150 138 H 112" },
 ] as const;
 
 export function HeroVisual() {
   const reduced = usePrefersReducedMotion();
+  const tiltRef = usePointerTilt<HTMLDivElement>({ maxTilt: 4, lift: 4 });
+  // Index 2 shows the most of the system at rest, so it is the static frame.
+  const [stage, setStage] = useState(reduced ? 2 : 0);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(true);
 
-  // Note: the wrapper is deliberately *not* aria-hidden. The diagram carries
-  // meaning — it is the shape of the work — so it is exposed as an image with
-  // a description. Only the backlight below is hidden, being pure decoration.
+  /* Stop advancing when scrolled away — an animation nobody can see is heat. */
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([entry]) => setInView(entry?.isIntersecting ?? true), {
+      threshold: 0,
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (reduced || !inView) return;
+    const timer = setTimeout(() => setStage((s) => (s + 1) % STAGES.length), 2200);
+    return () => clearTimeout(timer);
+  }, [stage, reduced, inView]);
+
+  const active = STAGES[stage]!;
+  const warn = active.tone === "warn";
+
   return (
-    <div className="relative w-full">
-      {/* Backlight behind the diagram, so the strokes read as emissive. */}
+    <div ref={wrapRef} className="relative w-full">
       <div
-        data-motion="decorative"
-        className="absolute inset-0 -z-10 opacity-60 blur-[70px]"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 55% at 55% 45%, var(--color-iris-600) 0%, transparent 70%)",
-        }}
-      />
-
-      <svg
-        viewBox="0 0 640 330"
-        role="img"
-        aria-label="Abstract diagram: client applications send consent-backed requests through a gateway to account aggregators, financial information providers and a datastore."
-        className="h-auto w-full"
+        ref={tiltRef}
+        className="relative transition-transform duration-500 ease-out will-change-transform"
+        style={{ transformStyle: "preserve-3d" }}
       >
-        <defs>
-          <linearGradient id="hv-edge" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="var(--color-azure-500)" stopOpacity="0.15" />
-            <stop offset="50%" stopColor="var(--color-azure-400)" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="var(--color-iris-400)" stopOpacity="0.3" />
-          </linearGradient>
-          <linearGradient id="hv-edge-r" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="var(--color-iris-500)" stopOpacity="0.3" />
-            <stop offset="50%" stopColor="var(--color-iris-400)" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="var(--color-aqua-400)" stopOpacity="0.2" />
-          </linearGradient>
-          <linearGradient id="hv-core" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="var(--color-azure-400)" />
-            <stop offset="100%" stopColor="var(--color-iris-500)" />
-          </linearGradient>
-          <radialGradient id="hv-core-glow">
-            <stop offset="0%" stopColor="var(--color-iris-400)" stopOpacity="0.55" />
-            <stop offset="100%" stopColor="var(--color-iris-400)" stopOpacity="0" />
-          </radialGradient>
-          <filter id="hv-soft" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur stdDeviation="5" />
-          </filter>
-        </defs>
+        {/* Layered surface: a lit panel, not a floating SVG. */}
+        <div
+          aria-hidden="true"
+          className="absolute -inset-5 rounded-panel opacity-70 blur-2xl"
+          style={{
+            background:
+              "radial-gradient(60% 60% at var(--tilt-x,50%) var(--tilt-y,50%), rgb(91 156 255 / 0.18), transparent 70%)",
+          }}
+        />
 
-        {/* ---- connecting edges ------------------------------------- */}
-        {NODES_LEFT.map((node, index) => (
-          <g key={node.id}>
-            <path
-              d={`M 134 ${node.y} C 198 ${node.y}, 216 165, 276 165`}
-              fill="none"
-              stroke="url(#hv-edge)"
-              strokeWidth="1.5"
-            />
-            {!reduced && (
-              <path
-                data-motion="decorative"
-                d={`M 134 ${node.y} C 198 ${node.y}, 216 165, 276 165`}
-                fill="none"
-                stroke="var(--color-azure-300)"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeDasharray="3 150"
-                className="animate-dash"
-                style={{ animationDelay: `${index * 1.3}s`, animationDuration: "3.4s" }}
-              />
-            )}
-          </g>
-        ))}
-
-        {NODES_RIGHT.map((node, index) => (
-          <g key={node.id}>
-            <path
-              d={`M 364 165 C 424 165, 440 ${node.y}, 506 ${node.y}`}
-              fill="none"
-              stroke="url(#hv-edge-r)"
-              strokeWidth="1.5"
-            />
-            {!reduced && (
-              <path
-                data-motion="decorative"
-                d={`M 364 165 C 424 165, 440 ${node.y}, 506 ${node.y}`}
-                fill="none"
-                stroke="var(--color-iris-300)"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeDasharray="3 150"
-                className="animate-dash"
-                style={{ animationDelay: `${0.6 + index * 1.1}s`, animationDuration: "3.8s" }}
-              />
-            )}
-          </g>
-        ))}
-
-        {/* ---- left nodes -------------------------------------------- */}
-        {NODES_LEFT.map((node) => (
-          <g key={node.id}>
-            <rect
-              x="12"
-              y={node.y - 20}
-              width="122"
-              height="40"
-              rx="10"
-              fill="var(--color-ink-800)"
-              stroke="var(--color-ink-600)"
-              strokeWidth="1"
-            />
-            <circle cx="32" cy={node.y} r="3.5" fill="var(--color-azure-400)" />
-            <text
-              x="46"
-              y={node.y + 4}
-              fill="var(--color-mist-300)"
-              fontSize="11"
-              fontFamily="var(--font-mono)"
+        <div className="relative overflow-hidden rounded-panel border border-ink-600/70 bg-gradient-to-b from-ink-850/90 to-ink-900/95 shadow-[var(--shadow-lift)] backdrop-blur-sm">
+          {/* Panel chrome */}
+          <div className="flex items-center justify-between gap-3 border-b border-ink-700/70 px-4 py-2.5">
+            <span className="eyebrow-sm text-mist-600">request path</span>
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-mono text-micro transition-colors duration-500",
+                warn
+                  ? "border-amber-glow/40 bg-amber-glow/10 text-amber-glow"
+                  : "border-jade-400/30 bg-jade-400/10 text-jade-400",
+              )}
             >
-              {node.label}
-            </text>
-          </g>
-        ))}
+              <span
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full",
+                  warn ? "bg-amber-glow" : "bg-jade-400",
+                )}
+              />
+              {active.label}
+            </span>
+          </div>
 
-        {/* ---- right nodes ------------------------------------------- */}
-        {NODES_RIGHT.map((node) => (
-          <g key={node.id}>
-            <rect
-              x="506"
-              y={node.y - 18}
-              width="118"
-              height="36"
-              rx="10"
-              fill="var(--color-ink-800)"
-              stroke="var(--color-ink-600)"
-              strokeWidth="1"
-            />
-            <circle cx="524" cy={node.y} r="3.5" fill="var(--color-iris-400)" />
-            <text
-              x="536"
-              y={node.y + 4}
-              fill="var(--color-mist-300)"
-              fontSize="11"
-              fontFamily="var(--font-mono)"
+          <div className="bg-dots px-4 py-5 opacity-[0.96]">
+            <svg
+              viewBox="0 0 404 250"
+              className="h-auto w-full"
+              role="img"
+              aria-label="Illustration of a backend request path: a client calls an API, which routes to a service that consults a cache, falls through to PostgreSQL on a miss, and returns a response."
             >
-              {node.label}
-            </text>
-          </g>
-        ))}
+              <defs>
+                <linearGradient id="hv-flow" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#3b7df5" stopOpacity="0.2" />
+                  <stop offset="50%" stopColor="#5b9cff" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="#a98bff" stopOpacity="0.3" />
+                </linearGradient>
+              </defs>
 
-        {/* ---- the core ---------------------------------------------- */}
-        <circle cx="320" cy="165" r="96" fill="url(#hv-core-glow)" filter="url(#hv-soft)" />
+              {/* edges */}
+              {EDGES.map((edge) => {
+                const on = active.edges.includes(edge.id);
+                return (
+                  <g key={edge.id}>
+                    <path
+                      d={edge.d}
+                      fill="none"
+                      stroke={on ? (warn ? "#f0b35b" : "url(#hv-flow)") : "#343c4d"}
+                      strokeWidth={on ? 2 : 1.2}
+                      strokeDasharray={edge.id === "e4" ? "5 4" : undefined}
+                      className="transition-all duration-500"
+                    />
+                    {on && !reduced && (
+                      <path
+                        data-motion="decorative"
+                        d={edge.d}
+                        fill="none"
+                        stroke={warn ? "#f0b35b" : "#8ab8ff"}
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeDasharray="3 120"
+                        className="animate-dash"
+                        style={{ animationDuration: "1.6s" }}
+                      />
+                    )}
+                  </g>
+                );
+              })}
 
-        {/* Orbit rings. Rotating these two is the only continuous motion
-            on the page, and they turn once every 30-odd seconds. */}
-        <motion.g
-          data-motion="decorative"
-          animate={reduced ? undefined : { rotate: 360 }}
-          transition={{ duration: 34, repeat: Infinity, ease: "linear" }}
-          style={{ transformOrigin: "320px 165px" }}
-        >
-          <ellipse
-            cx="320"
-            cy="165"
-            rx="84"
-            ry="30"
-            fill="none"
-            stroke="var(--color-ink-500)"
-            strokeWidth="1"
-            strokeDasharray="4 7"
-            opacity="0.75"
-          />
-          <circle cx="404" cy="165" r="3" fill="var(--color-aqua-400)" />
-        </motion.g>
+              {/* nodes */}
+              {NODES.map((node) => {
+                const on = active.nodes.includes(node.id);
+                return (
+                  <g key={node.id} className="transition-opacity duration-500" opacity={on ? 1 : 0.62}>
+                    <rect
+                      x={node.x}
+                      y={node.y}
+                      width={node.w}
+                      height={node.h}
+                      rx="10"
+                      fill={on ? "#171c27" : "#12161f"}
+                      stroke={on ? (warn ? "#f0b35b" : "#5b9cff") : "#343c4d"}
+                      strokeWidth={on ? 1.6 : 1}
+                      className="transition-all duration-500"
+                    />
+                    <text
+                      x={node.x + node.w / 2}
+                      y={node.y + node.h / 2 + 4}
+                      textAnchor="middle"
+                      fill={on ? "#e2e7f2" : "#8d97ad"}
+                      fontSize="11"
+                      fontFamily="ui-monospace, monospace"
+                      className="transition-colors duration-500"
+                    >
+                      {node.label}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
 
-        <motion.g
-          data-motion="decorative"
-          animate={reduced ? undefined : { rotate: -360 }}
-          transition={{ duration: 46, repeat: Infinity, ease: "linear" }}
-          style={{ transformOrigin: "320px 165px" }}
-        >
-          <ellipse
-            cx="320"
-            cy="165"
-            rx="30"
-            ry="84"
-            fill="none"
-            stroke="var(--color-ink-500)"
-            strokeWidth="1"
-            strokeDasharray="4 7"
-            opacity="0.6"
-          />
-          <circle cx="320" cy="81" r="2.5" fill="var(--color-azure-300)" />
-        </motion.g>
-
-        {/* Hexagonal gateway core */}
-        <g>
-          <polygon
-            points="320,117 361,141 361,189 320,213 279,189 279,141"
-            fill="var(--color-ink-850)"
-            stroke="url(#hv-core)"
-            strokeWidth="1.75"
-          />
-          <polygon
-            points="320,133 347,149 347,181 320,197 293,181 293,149"
-            fill="none"
-            stroke="var(--color-azure-400)"
-            strokeWidth="1"
-            opacity="0.45"
-          />
-          <motion.circle
-            data-motion="decorative"
-            cx="320"
-            cy="165"
-            r="6"
-            fill="url(#hv-core)"
-            animate={reduced ? undefined : { opacity: [0.55, 1, 0.55] }}
-            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <text
-            x="320"
-            y="243"
-            textAnchor="middle"
-            fill="var(--color-mist-400)"
-            fontSize="10.5"
-            fontFamily="var(--font-mono)"
-            letterSpacing="2"
-          >
-            GATEWAY
-          </text>
-        </g>
-
-        {/* ---- synthetic status strip --------------------------------
-            Deliberately generic placeholder values. Nothing here is a real
-            measurement and nothing is presented as one. */}
-        <g opacity="0.7">
-          <rect
-            x="196"
-            y="283"
-            width="248"
-            height="30"
-            rx="8"
-            fill="var(--color-ink-850)"
-            stroke="var(--color-ink-700)"
-          />
-          <circle cx="214" cy="298" r="3" fill="var(--color-jade-400)" />
-          <text
-            x="226"
-            y="302"
-            fill="var(--color-mist-400)"
-            fontSize="10"
-            fontFamily="var(--font-mono)"
-          >
-            consent · verified
-          </text>
-          <text
-            x="352"
-            y="302"
-            fill="var(--color-mist-500)"
-            fontSize="10"
-            fontFamily="var(--font-mono)"
-          >
-            retry · bounded
-          </text>
-        </g>
-      </svg>
+          {/* Static descriptors. Kinds of concern, never numbers. */}
+          <ul className="flex flex-wrap gap-x-4 gap-y-1.5 border-t border-ink-700/70 px-4 py-3">
+            {["idempotent retries", "bounded timeouts", "fail-open cache"].map((item) => (
+              <li
+                key={item}
+                className="inline-flex items-center gap-1.5 font-mono text-micro text-mist-600"
+              >
+                <span aria-hidden="true" className="h-1 w-1 rounded-full bg-azure-400/60" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }

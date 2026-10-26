@@ -24,11 +24,11 @@ describe("Hero", () => {
       "href",
       "#projects",
     );
-    expect(screen.getByRole("link", { name: /contact me/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /experience/i })).toHaveAttribute(
       "href",
-      "#contact",
+      "#experience",
     );
-    expect(screen.getByRole("link", { name: /download resume/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /résumé/i })).toHaveAttribute(
       "href",
       siteConfig.resumePath,
     );
@@ -36,7 +36,7 @@ describe("Hero", () => {
 
   it("serves the resume as a download rather than a navigation", () => {
     render(<Hero />);
-    expect(screen.getByRole("link", { name: /download resume/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /résumé/i })).toHaveAttribute(
       "download",
       siteConfig.resumeDownloadName,
     );
@@ -79,8 +79,17 @@ describe("Hero", () => {
     expect(text).not.toMatch(/\b(ninja|rockstar|guru|10x)\b/i);
   });
 
-  it("gives the hero diagram an accessible description", () => {
+  it("gives the hero visual an accessible description of what it depicts", () => {
     render(<Hero />);
-    expect(screen.getByRole("img", { name: /gateway/i })).toBeInTheDocument();
+    const visual = screen.getByRole("img", { name: /request path|backend request/i });
+    expect(visual).toBeInTheDocument();
+    // It should describe the system, not just say "diagram".
+    expect(visual.getAttribute("aria-label")).toMatch(/cache|PostgreSQL|API/i);
+  });
+
+  it("offers a working scroll cue rather than a decorative arrow", () => {
+    render(<Hero />);
+    const cue = screen.getByRole("link", { name: /scroll to the about section/i });
+    expect(cue).toHaveAttribute("href", "#about");
   });
 });

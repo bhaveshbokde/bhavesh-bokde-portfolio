@@ -122,9 +122,13 @@ test.describe("navigation", () => {
       "href",
       "#projects",
     );
-    await expect(page.getByRole("link", { name: /contact me/i }).first()).toHaveAttribute(
+    await expect(page.getByRole("link", { name: /experience/i }).first()).toHaveAttribute(
       "href",
-      "#contact",
+      "#experience",
+    );
+    await expect(page.getByRole("link", { name: /résumé/i }).first()).toHaveAttribute(
+      "href",
+      "/resume/Bhavesh-Bokde-Java-Backend-Engineer.pdf",
     );
   });
 

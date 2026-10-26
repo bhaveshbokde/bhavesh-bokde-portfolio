@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePointerTilt } from "@/hooks/usePointerTilt";
 import type { Project } from "@/data/types";
 import { cn } from "@/lib/utils";
 import { Icon } from "./Icon";
@@ -39,24 +42,30 @@ function initials(name: string): string {
  * for a screenshot of software that does not look like that.
  */
 export function ProjectCard({ project }: { project: Project }) {
+  const tiltRef = usePointerTilt<HTMLDivElement>({ maxTilt: 4, lift: 4 });
   const repositoryLink = project.links?.find((link) => link.kind === "repository");
   const demoLink = project.links?.find((link) => link.kind === "demo");
   const accent = ACCENTS[project.accent ?? "blue"];
 
   return (
+    <div
+      ref={tiltRef}
+      className="h-full transition-transform duration-500 ease-out will-change-transform"
+      style={{ transformStyle: "preserve-3d" }}
+    >
     <article
       className={cn(
         "group surface-card relative flex h-full flex-col overflow-hidden",
-        "transition-[transform,border-color,box-shadow] duration-500",
-        "motion-safe:hover:-translate-y-1 hover:border-ink-500",
-        "hover:shadow-[0_24px_60px_-28px_rgb(0_0_0/0.9)]",
+        "transition-[border-color,box-shadow] duration-500",
+        "hover:border-ink-500 focus-within:border-ink-500",
+        "hover:shadow-[var(--shadow-lift)] focus-within:shadow-[var(--shadow-lift)]",
       )}
     >
       {/* Accent wash, only on hover. */}
       <div
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100",
+          "pointer-events-none absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-within:opacity-100",
           accent,
         )}
       />
@@ -66,7 +75,7 @@ export function ProjectCard({ project }: { project: Project }) {
           six of those on screen at once is a disco, not a portfolio. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px scale-x-0 bg-gradient-to-r from-transparent via-azure-400/70 to-transparent opacity-0 transition-all duration-500 ease-out group-hover:scale-x-100 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px scale-x-0 bg-gradient-to-r from-transparent via-azure-400/70 to-transparent opacity-0 transition-all duration-500 ease-out group-hover:scale-x-100 group-hover:opacity-100 group-focus-within:scale-x-100 group-focus-within:opacity-100"
       />
 
       {/* ---------------- preview ---------------- */}
@@ -77,7 +86,7 @@ export function ProjectCard({ project }: { project: Project }) {
             alt={project.previewAlt ?? `${project.name} — diagram`}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            className="object-cover object-center transition-transform duration-700 motion-safe:group-hover:scale-[1.03]"
+            className="object-cover object-center transition-transform duration-700 motion-safe:group-hover:scale-[1.03] motion-safe:group-focus-within:scale-[1.03]"
             loading="lazy"
           />
         ) : (
@@ -155,12 +164,12 @@ export function ProjectCard({ project }: { project: Project }) {
 
         {/* --- links --- */}
         <div className="mt-6 flex items-center justify-between gap-3 border-t border-ink-700/60 pt-4">
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-azure-300 transition-colors group-hover:text-azure-400">
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-azure-300 transition-colors group-hover:text-azure-400 group-focus-within:text-azure-400">
             {project.caseStudy ? "Read case study" : "View details"}
             <Icon
               name="ArrowRight"
               size={13}
-              className="transition-transform duration-300 motion-safe:group-hover:translate-x-0.5"
+              className="transition-transform duration-300 motion-safe:group-hover:translate-x-0.5 motion-safe:group-focus-within:translate-x-0.5"
             />
           </span>
 
@@ -191,5 +200,6 @@ export function ProjectCard({ project }: { project: Project }) {
         </div>
       </div>
     </article>
+    </div>
   );
 }

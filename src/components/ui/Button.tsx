@@ -5,11 +5,27 @@ import { cn } from "@/lib/utils";
 type Variant = "primary" | "secondary" | "ghost";
 type Size = "sm" | "md" | "lg";
 
+/**
+ * Four states, all deliberate:
+ *
+ *   hover    lifts half a pixel and brightens
+ *   pressed  drops the lift and scales to 0.97, so a click is felt as well as
+ *            seen — without `active:` a button on a touchscreen gives no
+ *            feedback at all between tap and navigation
+ *   focus    the global :focus-visible ring from globals.css, never removed
+ *   disabled pointer events off and dimmed, with aria-disabled for anchors,
+ *            which do not support the disabled attribute
+ *
+ * The press transition is deliberately quicker than the hover one. Feedback
+ * that lags the finger reads as lag, not as polish.
+ */
 const BASE =
   "group relative inline-flex items-center justify-center gap-2 rounded-full font-medium " +
-  "transition-[transform,background-color,border-color,box-shadow,color] duration-300 " +
-  "motion-safe:hover:-translate-y-0.5 active:translate-y-0 " +
-  "disabled:pointer-events-none disabled:opacity-50";
+  "transition-[transform,background-color,border-color,box-shadow,color,opacity] " +
+  "duration-300 ease-out " +
+  "motion-safe:hover:-translate-y-0.5 " +
+  "active:translate-y-0 active:scale-[0.97] active:duration-75 " +
+  "aria-disabled:pointer-events-none aria-disabled:opacity-45";
 
 const VARIANTS: Record<Variant, string> = {
   // The only filled control on the page. Scarcity is what makes it read as
@@ -41,6 +57,13 @@ export interface ButtonLinkProps
   download?: string;
   /** Forces target=_blank + rel. Inferred from the href when not given. */
   external?: boolean;
+  /**
+   * Renders the control as unavailable. An anchor cannot be `disabled`, so
+   * this uses `aria-disabled` plus `tabIndex={-1}` — the styling alone would
+   * look unavailable while still being clickable and focusable, which is
+   * worse than not offering the state at all.
+   */
+  disabled?: boolean;
 }
 
 /**
@@ -60,9 +83,13 @@ export function ButtonLink({
   className,
   download,
   external,
+  disabled,
   ...rest
 }: ButtonLinkProps) {
   const classes = cn(BASE, VARIANTS[variant], SIZES[size], className);
+  const stateProps = disabled
+    ? ({ "aria-disabled": true, tabIndex: -1 } as const)
+    : {};
   const isExternal = external ?? /^https?:\/\//.test(href);
   const isHashOrRoute = href.startsWith("#") || href.startsWith("/");
 
@@ -71,6 +98,7 @@ export function ButtonLink({
       <a
         href={href}
         className={classes}
+        {...stateProps}
         target="_blank"
         rel="noopener noreferrer"
         {...rest}
@@ -82,7 +110,8 @@ export function ButtonLink({
 
   if (download !== undefined) {
     return (
-      <a href={href} download={download} className={classes} {...rest}>
+      <a href={href} download={download} className={classes} {...stateProps}
+        {...rest}>
         {children}
       </a>
     );
@@ -90,14 +119,16 @@ export function ButtonLink({
 
   if (isHashOrRoute) {
     return (
-      <Link href={href} className={classes} {...rest}>
+      <Link href={href} className={classes} {...stateProps}
+        {...rest}>
         {children}
       </Link>
     );
   }
 
   return (
-    <a href={href} className={classes} {...rest}>
+    <a href={href} className={classes} {...stateProps}
+        {...rest}>
       {children}
     </a>
   );

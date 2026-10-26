@@ -149,6 +149,22 @@
   }
 }
 
+/* The scroll cue: a short highlight travelling down a hairline. Transform
+   only, so it stays on the compositor. */
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(300%);
+    opacity: 0;
+  }
+}
+
 @keyframes caret {
   50% {
     opacity: 0;
