@@ -125,7 +125,10 @@ export function CaseStudySection() {
           </Reveal>
 
           {/* ---------------- diagram ---------------- */}
-          <Reveal delay={0.1}>
+          {/* min-w-0: a grid item defaults to min-width:auto, so the
+              diagram's min-width would force the whole track wide and the
+              overflow-x-auto wrapper would never get to clip anything. */}
+          <Reveal delay={0.1} className="min-w-0">
             {project.interactiveArchitecture ? (
               <ArchitectureExplorer />
             ) : (

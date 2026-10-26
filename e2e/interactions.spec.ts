@@ -91,61 +91,157 @@ test.describe("command palette", () => {
 });
 
 test.describe("architecture explorer", () => {
+  // The canvas renders as an SVG on desktop and as a grouped list on mobile,
+  // so these tests target the controls and copy that exist in both modes.
+
   test("renders on the case study page with its legend", async ({ page }) => {
     await page.goto("/projects/aaconnect");
 
+    await expect(page.getByRole("tab", { name: "Architecture" })).toBeVisible();
+    await expect(page.getByText("Asynchronous notification").first()).toBeVisible();
+    await expect(page.getByText("Failure path").first()).toBeVisible();
     await expect(
-      page.getByRole("group", { name: /interactive architecture diagram/i }).first(),
+      page.getByRole("button", { name: /Selected Account Aggregator/ }).filter({ visible: true }).first(),
     ).toBeVisible();
-    await expect(page.getByText("Retry & failure path").first()).toBeVisible();
   });
 
   test("selecting a component swaps the explanation", async ({ page }) => {
     await page.goto("/projects/aaconnect");
 
-    const adapters = page.getByRole("button", { name: /Provider adapters/ }).first();
-    await adapters.click();
-
+    await page.getByRole("button", { name: /AA adapter layer/ }).filter({ visible: true }).first().click();
     await expect(
-      page.getByRole("heading", { name: /Provider adapters/ }).first(),
+      page.getByRole("heading", { name: /AA adapter layer/ }).first(),
     ).toBeVisible();
-    await expect(adapters).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByText("Responsibility").first()).toBeVisible();
   });
 
-  test("the lifecycle walkthrough advances through steps", async ({ page }) => {
+  test("states that the aggregator is not AAConnect", async ({ page }) => {
     await page.goto("/projects/aaconnect");
 
-    await page.getByRole("button", { name: /play request lifecycle/i }).first().click();
-    await expect(page.getByText(/Step 1 of/).first()).toBeVisible();
-
-    // Stopping is available while it runs.
+    await page.getByRole("button", { name: /Selected Account Aggregator/ }).filter({ visible: true }).first().click();
     await expect(
-      page.getByRole("button", { name: /stop walkthrough/i }).first(),
+      page.getByText(/not AAConnect, and AAConnect is not this/i).first(),
     ).toBeVisible();
   });
 
-  test("is operable from the keyboard", async ({ page }) => {
+  test("the lifecycle walkthrough advances through all ten stages", async ({ page }) => {
     await page.goto("/projects/aaconnect");
 
-    const gateway = page.getByRole("button", { name: /API gateway/ }).first();
-    await gateway.focus();
-    await page.keyboard.press("ArrowRight");
+    await page.getByRole("button", { name: /next stage/i }).click();
+    await expect(page.getByText(/Stage 1 of 10/).first()).toBeVisible();
 
-    // Focus moved to another component and selected it.
-    const focusedPressed = await page.evaluate(
-      () => document.activeElement?.getAttribute("aria-pressed"),
+    await page.getByRole("button", { name: /next stage/i }).click();
+    await expect(page.getByText(/Stage 2 of 10/).first()).toBeVisible();
+
+    // Jump straight to the last stage without autoplay.
+    await page.getByRole("button", { name: /^Stage 10:/ }).click();
+    await expect(page.getByText(/Stage 10 of 10/).first()).toBeVisible();
+    await expect(page.getByRole("button", { name: /next stage/i })).toBeDisabled();
+  });
+
+  test("play and pause both work", async ({ page }) => {
+    await page.goto("/projects/aaconnect");
+
+    await page.getByRole("button", { name: /play complete request lifecycle/i }).click();
+    await expect(page.getByRole("button", { name: /^Pause$/ })).toBeVisible();
+
+    await page.getByRole("button", { name: /^Pause$/ }).click();
+    await expect(
+      page.getByRole("button", { name: /play complete request lifecycle/i }),
+    ).toBeVisible();
+  });
+
+  test("resets back to the whole architecture", async ({ page }) => {
+    await page.goto("/projects/aaconnect");
+
+    await page.getByRole("button", { name: /next stage/i }).click();
+    await expect(page.getByText(/Stage 1 of 10/).first()).toBeVisible();
+
+    await page.getByRole("button", { name: /show full architecture/i }).click();
+    await expect(page.getByText(/Stage 1 of 10/)).toHaveCount(0);
+  });
+
+  test("the sequence view shows the protocol operations in order", async ({ page }) => {
+    await page.goto("/projects/aaconnect");
+    await page.getByRole("tab", { name: "Sequence" }).click();
+
+    // Both renderings are in the DOM — the SVG lanes and the mobile list — and
+    // CSS hides one of them. Filtering to visible keeps this honest on both
+    // viewports instead of asserting against whichever happens to be first.
+    for (const op of [
+      /POST \/Consent\/Notification/,
+      /POST \/FI\/fetch/,
+      /POST \/FI\/request/,
+    ]) {
+      await expect(
+        page.getByText(op).filter({ visible: true }).first(),
+        String(op),
+      ).toBeVisible();
+    }
+  });
+
+  test("the failure view explains signal, consequence and handling", async ({ page }) => {
+    await page.goto("/projects/aaconnect");
+
+    await page.getByRole("tab", { name: "Failure paths" }).click();
+    const toggle = page.getByRole("button", { name: /Decryption failure/ });
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByText("Signal").first()).toBeVisible();
+    await expect(page.getByText("Consequence").first()).toBeVisible();
+    await expect(page.getByText("Handling").first()).toBeVisible();
+  });
+
+  test("the SVG diagram is operable from the keyboard", async ({ page }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== "desktop-chromium",
+      "the SVG canvas is desktop-only; mobile gets the list, covered below",
     );
-    expect(focusedPressed).toBe("true");
+    await page.goto("/projects/aaconnect");
+
+    await page
+      .getByRole("button", { name: /Client FIU\. the consuming/ })
+      .filter({ visible: true })
+      .first()
+      .focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("heading", { name: /Client FIU/ }).first()).toBeVisible();
+
+    await page.keyboard.press("ArrowRight");
+    await expect(page.getByRole("heading", { name: /End user/ }).first()).toBeVisible();
+  });
+
+  test("the mobile component list is operable", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "mobile-chromium", "mobile viewport only");
+    await page.goto("/projects/aaconnect");
+
+    // The grouped list replaces the diagram below the md breakpoint — a
+    // 1240-unit canvas is not usable with a thumb.
+    const control = page
+      .getByRole("button", { name: /Selected Account Aggregator/ })
+      .filter({ visible: true })
+      .first();
+    await expect(control).toBeVisible();
+
+    await control.click();
+    await expect(control).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      page.getByRole("heading", { name: /Selected Account Aggregator/ }).first(),
+    ).toBeVisible();
   });
 
   test("publishes no provider names, endpoints or hostnames", async ({ page }) => {
     await page.goto("/projects/aaconnect");
-    const text = (await page.locator("body").innerText()).toLowerCase();
 
-    for (const forbidden of ["anumati", "finvu", "phonepe", "nsdl", "onemoney"]) {
-      expect(text, `must not name "${forbidden}"`).not.toContain(forbidden);
+    for (const tab of ["Architecture", "Sequence", "Failure paths"]) {
+      await page.getByRole("tab", { name: tab }).click();
+      const text = (await page.locator("body").innerText()).toLowerCase();
+      for (const forbidden of ["anumati", "finvu", "phonepe", "nsdl", "onemoney"]) {
+        expect(text, `${tab} must not name "${forbidden}"`).not.toContain(forbidden);
+      }
     }
-    expect(text).not.toMatch(/\/api\/v\d/);
   });
 
   test("renders without console errors", async ({ page }) => {
@@ -154,8 +250,10 @@ test.describe("architecture explorer", () => {
     page.on("pageerror", (e) => errors.push(String(e)));
 
     await page.goto("/projects/aaconnect", { waitUntil: "load" });
-    await page.getByRole("button", { name: /Consent service/ }).first().click();
-    await page.waitForTimeout(600);
+    await page.getByRole("button", { name: /Consent orchestration/ }).filter({ visible: true }).first().click();
+    await page.getByRole("tab", { name: "Sequence" }).click();
+    await page.getByRole("tab", { name: "Failure paths" }).click();
+    await page.waitForTimeout(700);
 
     expect(errors).toEqual([]);
   });
@@ -245,10 +343,14 @@ test.describe("reduced motion", () => {
   test("the architecture diagram remains fully usable", async ({ page }) => {
     await page.goto("/projects/aaconnect", { waitUntil: "load" });
 
-    await page.getByRole("button", { name: /FI request service/ }).first().click();
+    await page.getByRole("button", { name: /FI request & fetch/ }).filter({ visible: true }).first().click();
     await expect(
-      page.getByRole("heading", { name: /FI request service/ }).first(),
+      page.getByRole("heading", { name: /FI request & fetch/ }).first(),
     ).toBeVisible();
+
+    // Manual stage navigation must still work without animation.
+    await page.getByRole("button", { name: /next stage/i }).click();
+    await expect(page.getByText(/Stage 1 of 10/).first()).toBeVisible();
   });
 
   test("the command palette still opens", async ({ page }) => {

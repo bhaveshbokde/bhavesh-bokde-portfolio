@@ -292,9 +292,12 @@ test.describe("project pages", () => {
   }) => {
     await page.goto("/projects/aaconnect");
 
-    const notice = page.getByRole("complementary", { name: /confidentiality notice/i });
+    // The case-study hero carries the scope notice up front, rather than a
+    // separate block further down the page.
+    const notice = page.getByRole("complementary", { name: /scope and confidentiality/i });
     await expect(notice).toBeVisible();
     await expect(notice).toContainText(/no source code/i);
+    await expect(notice).toContainText(/does not reproduce any production architecture/i);
 
     await expect(page.getByRole("link", { name: /view repository/i })).toHaveCount(0);
   });
