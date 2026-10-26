@@ -470,3 +470,87 @@ test.describe("responsive layout", () => {
     });
   }
 });
+
+/* ────────────────────────────────────────────────────────────────────────────
+   The redesigned sections. These assert behaviour the art direction
+   introduced — not how anything looks, which no assertion can usefully pin.
+   ──────────────────────────────────────────────────────────────────────── */
+
+test.describe("contact", () => {
+  test("copies the address and announces that it did", async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    const button = page.getByRole("button", { name: /copy email address/i });
+    await button.scrollIntoViewIfNeeded();
+    await button.click();
+
+    // The outcome reaches assistive technology, not only the button's label.
+    await expect(page.getByRole("status")).toHaveText(/copied to clipboard/i);
+
+    const clipboard = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboard).toContain("@");
+  });
+
+  test("publishes the address exactly once, not as a heading and a row", async ({
+    page,
+  }) => {
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    const contact = page.locator("#contact");
+    const address = (await contact.textContent()) ?? "";
+    const matches = address.match(/[\w.+-]+@[\w-]+\.[\w.]+/g) ?? [];
+    expect(new Set(matches).size).toBe(1);
+    expect(matches.length).toBe(1);
+  });
+});
+
+test.describe("project detail pages", () => {
+  test("number their sections continuously, with no gaps", async ({ page }) => {
+    await page.goto("/projects/finsight", { waitUntil: "domcontentloaded" });
+
+    const numbers = await page
+      .locator("main section > div > span[aria-hidden='true']")
+      .filter({ hasText: /^\d{2}$/ })
+      .allTextContents();
+
+    expect(numbers.length).toBeGreaterThan(2);
+    // A filtered-out empty section must not leave a hole in the sequence.
+    expect(numbers).toEqual(
+      numbers.map((_, index) => String(index + 1).padStart(2, "0")),
+    );
+  });
+
+  test("page index links resolve to real anchors on the page", async ({ page }) => {
+    await page.goto("/projects/finsight", { waitUntil: "domcontentloaded" });
+
+    const index = page.getByRole("navigation", { name: "On this page" });
+    await expect(index).toBeVisible();
+
+    const hrefs = await index.getByRole("link").evaluateAll((links) =>
+      links.map((link) => (link as HTMLAnchorElement).getAttribute("href")),
+    );
+    expect(hrefs.length).toBeGreaterThan(1);
+
+    for (const href of hrefs) {
+      expect(href).toMatch(/^#/);
+      await expect(page.locator(href!)).toHaveCount(1);
+    }
+  });
+
+  test("the pager walks only visible projects and never dead-ends", async ({ page }) => {
+    await page.goto("/projects/finsight", { waitUntil: "domcontentloaded" });
+
+    const pager = page.getByRole("navigation", { name: "More projects" });
+    await expect(pager).toBeVisible();
+
+    for (const link of await pager.getByRole("link").all()) {
+      const href = await link.getAttribute("href");
+      expect(href).toMatch(/^\/projects\//);
+      // The retired project must not be reachable by paging either.
+      expect(href).not.toContain("dsa");
+
+      const response = await page.request.get(href!);
+      expect(response.status(), `${href} is not reachable`).toBe(200);
+    }
+  });
+});

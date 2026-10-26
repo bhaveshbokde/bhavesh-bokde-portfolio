@@ -140,8 +140,11 @@ export function Header({
 
   const linkClass = (href: string) =>
     cn(
-      "relative rounded-md px-3 py-2 text-sm transition-colors duration-200",
-      activeHref === href ? "text-white" : "text-mist-400 hover:text-mist-100",
+      "relative rounded-control px-3 py-2 text-sm transition-all duration-300",
+      "active:scale-[0.97] active:duration-75",
+      activeHref === href
+        ? "text-white"
+        : "text-mist-400 hover:bg-ink-850/60 hover:text-mist-100",
     );
 
   return (
@@ -150,7 +153,7 @@ export function Header({
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
         scrolled
-          ? "border-b border-ink-700/70 bg-ink-950/80 backdrop-blur-xl"
+          ? "border-b border-ink-700/70 bg-ink-950/80 shadow-[0_8px_32px_-16px_rgb(0_0_0_/_0.8)] backdrop-blur-xl"
           : "border-b border-transparent bg-transparent",
       )}
     >
@@ -184,11 +187,14 @@ export function Header({
                 aria-current={activeHref === item.href ? "true" : undefined}
               >
                 {item.label}
+                {/* The active marker is a short centred bar rather than a
+                    full-width underline — it reads as a position indicator
+                    instead of as a link that happens to be underlined. */}
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "absolute inset-x-3 -bottom-px h-px bg-gradient-to-r from-azure-400 to-iris-400 transition-opacity duration-300",
-                    activeHref === item.href ? "opacity-100" : "opacity-0",
+                    "absolute -bottom-px left-1/2 h-px -translate-x-1/2 bg-gradient-to-r from-azure-400 to-iris-400 transition-all duration-500",
+                    activeHref === item.href ? "w-5 opacity-100" : "w-0 opacity-0",
                   )}
                 />
               </Link>
@@ -217,7 +223,7 @@ export function Header({
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}
-              className="grid h-10 w-10 place-items-center rounded-lg border border-ink-600 bg-ink-850/80 text-mist-200 transition-colors hover:border-azure-500/50 hover:text-white lg:hidden"
+              className="grid h-10 w-10 place-items-center rounded-control border border-ink-600 bg-ink-850/80 text-mist-200 transition-all duration-300 hover:border-azure-500/50 hover:text-white active:scale-[0.94] active:duration-75 lg:hidden"
             >
               <Icon name={open ? "X" : "Menu"} size={18} />
             </button>
@@ -243,22 +249,46 @@ export function Header({
           >
             <nav aria-label="Mobile" className="container-page py-4">
               <ul className="flex flex-col">
-                {navItems.map((item) => (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      onClick={close}
-                      className="flex items-center justify-between rounded-lg px-3 py-3.5 text-base text-mist-200 transition-colors hover:bg-ink-800 hover:text-white"
-                      aria-current={activeHref === item.href ? "true" : undefined}
-                    >
-                      {item.label}
-                      <Icon name="ArrowUpRight" size={16} className="text-mist-500" />
-                    </Link>
-                  </li>
-                ))}
+                {navItems.map((item, index) => {
+                  const current = activeHref === item.href;
+                  return (
+                    <li key={item.href} className="border-b border-ink-800 last:border-b-0">
+                      <Link
+                        href={item.href}
+                        onClick={close}
+                        className={cn(
+                          "flex items-center gap-3.5 rounded-control px-3 py-4 text-base transition-colors",
+                          current
+                            ? "text-white"
+                            : "text-mist-300 hover:bg-ink-850 hover:text-white",
+                        )}
+                        aria-current={current ? "true" : undefined}
+                      >
+                        {/* Hidden from the accessible name, which stays exactly
+                            the label — a screen reader reading "zero two about"
+                            helps nobody. */}
+                        <span
+                          aria-hidden="true"
+                          className={cn(
+                            "font-mono text-label tabular-nums transition-colors",
+                            current ? "text-azure-400" : "text-mist-600",
+                          )}
+                        >
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        {item.label}
+                        <Icon
+                          name="ArrowUpRight"
+                          size={16}
+                          className="ml-auto text-mist-600"
+                        />
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
 
-              <div className="mt-3 border-t border-ink-700 pt-4">
+              <div className="mt-5 border-t border-ink-700 pt-5">
                 <ButtonLink
                   href={resumePath}
                   download={resumeDownloadName}
