@@ -161,22 +161,28 @@ describe("EducationSection", () => {
 });
 
 describe("Contact", () => {
-  it("renders email, phone, location and the social channels", () => {
+  it("renders email, location and the social channels", () => {
     render(<Contact />);
     expect(screen.getByText(profile.email)).toBeInTheDocument();
-    expect(screen.getByText(profile.phone!)).toBeInTheDocument();
     expect(screen.getByText(profile.location)).toBeInTheDocument();
   });
 
-  it("makes the email and phone actionable", () => {
+  it("makes the email actionable", () => {
     render(<Contact />);
     expect(
       screen.getByRole("link", { name: new RegExp(`Email: ${profile.email}`) }),
     ).toHaveAttribute("href", `mailto:${profile.email}`);
-    expect(screen.getByRole("link", { name: /Phone:/ })).toHaveAttribute(
-      "href",
-      "tel:+918830076645",
-    );
+  });
+
+  it("omits the phone row, because no phone is configured for the public site", () => {
+    // `phone` is commented out in profile.ts on purpose — a number on a public
+    // page gets scraped. This asserts the current, intended configuration;
+    // Contact.phone.test.tsx proves the row still works when it IS set.
+    expect(profile.phone).toBeUndefined();
+
+    render(<Contact />);
+    expect(screen.queryByRole("link", { name: /Phone:/ })).not.toBeInTheDocument();
+    expect(screen.queryByText(/\+91/)).not.toBeInTheDocument();
   });
 
   it("ships no contact form, rather than one that discards messages", () => {

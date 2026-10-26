@@ -19,7 +19,12 @@ export const profile: Profile = {
 
   location: "Pune, Maharashtra, India",
   email: "bhaveshbokde@gmail.com",
-  phone: "+91 8830076645",
+
+  // Deliberately not set on the public site. A phone number on a public page
+  // gets harvested by scrapers; this one is still in the resume PDF, so a
+  // recruiter who actually downloads it has it, and a crawler does not.
+  // Uncomment to show the phone row in the contact section again.
+  // phone: "+91 8830076645",
 
   careerStartDate: "2022-09-01",
   // yearsOfExperienceOverride: "3.5+",   // uncomment to pin the figure
