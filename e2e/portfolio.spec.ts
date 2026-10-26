@@ -118,15 +118,19 @@ test.describe("navigation", () => {
   test("every hero call to action resolves", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("link", { name: /view projects/i }).first()).toHaveAttribute(
+    // Scoped to the hero. `.first()` matched the header nav link instead,
+    // so this assertion was passing against the wrong element entirely.
+    const hero = page.locator("#hero");
+
+    await expect(hero.getByRole("link", { name: /view projects/i })).toHaveAttribute(
       "href",
       "#projects",
     );
-    await expect(page.getByRole("link", { name: /experience/i }).first()).toHaveAttribute(
+    await expect(hero.getByRole("link", { name: /experience/i })).toHaveAttribute(
       "href",
       "#experience",
     );
-    await expect(page.getByRole("link", { name: /résumé/i }).first()).toHaveAttribute(
+    await expect(hero.getByRole("link", { name: /résumé/i })).toHaveAttribute(
       "href",
       "/resume/Bhavesh-Bokde-Java-Backend-Engineer.pdf",
     );
@@ -703,5 +707,77 @@ test.describe("responsive visibility actually applies", () => {
     const rowBox = await row.boundingBox();
     // The title must get most of the row, not 43px of it.
     expect(box!.width).toBeGreaterThan(rowBox!.width * 0.55);
+  });
+});
+
+test.describe("document integrity", () => {
+  test("header nav links work from a project page, not just the homepage", async ({
+    page,
+  }) => {
+    // Rendered verbatim, "#about" is a link to an element that does not exist
+    // on a detail page, so clicking About from there did nothing.
+    await page.goto("/projects/aaconnect", { waitUntil: "domcontentloaded" });
+
+    const primary = page.getByRole("navigation", { name: "Primary" });
+    if (!(await primary.isVisible())) {
+      // Phone viewport: the same links live inside the mobile menu.
+      await page.getByRole("button", { name: /open menu/i }).click();
+    }
+    const about = page
+      .locator("header")
+      .getByRole("link", { name: "About" })
+      .first();
+    await expect(about).toHaveAttribute("href", "/#about");
+
+    await about.click();
+    await page.waitForURL(/\/#about$/);
+    await expect(page.locator("#about")).toBeVisible();
+  });
+
+  // A duplicate id is invalid HTML, and it silently breaks in-page anchors:
+  // the browser jumps to whichever element comes first. This shipped on
+  // /projects/aaconnect, where a case-study section id from projects.ts
+  // collided with the architecture explorer's own id and the hero's
+  // "Explore the architecture" button landed in the wrong place.
+  for (const route of [
+    "/",
+    "/projects/aaconnect",
+    "/projects/finsight",
+    "/projects/sql-interview-mastery",
+  ]) {
+    test(`${route} has no duplicate element ids`, async ({ page }) => {
+      await page.goto(route, { waitUntil: "networkidle" });
+
+      const duplicates = await page.evaluate(() => {
+        const seen = new Map<string, number>();
+        for (const el of document.querySelectorAll("[id]")) {
+          const id = el.id;
+          if (!id) continue;
+          seen.set(id, (seen.get(id) ?? 0) + 1);
+        }
+        return [...seen.entries()]
+          .filter(([, count]) => count > 1)
+          .map(([id, count]) => `#${id} appears ${count} times`);
+      });
+
+      expect(duplicates, duplicates.join("; ")).toEqual([]);
+    });
+  }
+
+  test("every in-page anchor resolves to exactly one element", async ({ page }) => {
+    await page.goto("/projects/aaconnect", { waitUntil: "networkidle" });
+
+    // Same-page anchors only. A nav link rendered as "/#about" targets the
+    // homepage and is correctly absent here — that is the fix, not a defect.
+    const hrefs = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')]
+        .map((a) => a.getAttribute("href"))
+        .filter((h): h is string => !!h && h !== "#"),
+    );
+
+    expect(hrefs.length).toBeGreaterThan(0);
+    for (const href of hrefs) {
+      await expect(page.locator(href), `${href} must resolve`).toHaveCount(1);
+    }
   });
 });

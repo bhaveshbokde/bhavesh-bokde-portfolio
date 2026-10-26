@@ -3,6 +3,7 @@ import { getFooterLinks, getNavItems } from "@/lib/content";
 import { profile } from "@/data/profile";
 import { siteConfig } from "@/data/site-config";
 import { Icon } from "@/components/ui/Icon";
+import { sectionHref } from "@/lib/utils";
 
 /**
  * The footer.
@@ -75,7 +76,7 @@ export function Footer() {
               {navItems.map((item) => (
                 <li key={item.href}>
                   <Link
-                    href={item.href}
+                    href={sectionHref(item.href)}
                     className="group inline-flex items-center gap-2 rounded-control py-1 text-sm text-mist-400 transition-colors hover:text-mist-100"
                   >
                     <span

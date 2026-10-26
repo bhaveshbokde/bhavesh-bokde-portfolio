@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { NavItem } from "@/data/types";
-import { cn } from "@/lib/utils";
+import { cn, sectionHref } from "@/lib/utils";
 import { Icon } from "@/components/ui/Icon";
 import { ButtonLink } from "@/components/ui/Button";
 import { CommandPalette, type Command } from "@/components/ui/CommandPalette";
@@ -182,7 +182,7 @@ export function Header({
             {navItems.map((item) => (
               <Link
                 key={item.href}
-                href={item.href}
+                href={sectionHref(item.href)}
                 className={linkClass(item.href)}
                 aria-current={activeHref === item.href ? "true" : undefined}
               >
@@ -260,7 +260,7 @@ export function Header({
                   return (
                     <li key={item.href} className="border-b border-ink-800 last:border-b-0">
                       <Link
-                        href={item.href}
+                        href={sectionHref(item.href)}
                         onClick={close}
                         className={cn(
                           "flex items-center gap-3.5 rounded-control px-3 py-4 text-base transition-colors",
