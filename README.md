@@ -605,6 +605,28 @@ NEXT_PUBLIC_SITE_URL=https://your-domain.example
 configuration needed. Add `NEXT_PUBLIC_SITE_URL` under Settings → Environment
 Variables.
 
+> **Commit author must match the Vercel account.** Vercel refuses to build a
+> commit whose author email it does not recognise, with:
+>
+> ```
+> The deployment was blocked because the commit author
+> doesn’t have permission to create deployments for this project.
+> ```
+>
+> The global git identity on this machine is a work address
+> (`bhaveshb@lentra.ai`), which is not the Vercel account
+> (`bhaveshbokde@gmail.com`). A repo-local override keeps the two in step:
+>
+> ```bash
+> git config user.email "bhaveshbokde@gmail.com"   # this repo only
+> ```
+>
+> It is already set in `.git/config`, which is local and not committed — so it
+> needs setting again after a fresh clone. The symptom is a deployment stuck at
+> status **Blocked** while the previous build keeps serving; `vercel inspect
+> <url>` prints the reason. Nothing is broken and nothing needs reverting: fix
+> the author and deploy again.
+
 **Netlify / Cloudflare Pages** — build `npm run build`, with the respective
 Next.js adapter.
 
